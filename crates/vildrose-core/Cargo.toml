@@ -1,0 +1,28 @@
+[package]
+name = "vildrose-core"
+description = "Balanced ternary primitives: Trit, Tryte, Word9, Word27, Kleene logic, arithmetic."
+
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+categories.workspace = true
+
+[features]
+# Word54 (54-trit / 64-bit equivalent), reserved, but not yet implemented.
+# Enable with: cargo build -p vildrose-core --features word54
+word54 = []
+
+[dependencies]
+# Intentionally empty — vildrose-core has no external dependencies.
+
+[dev-dependencies]
+proptest = { workspace = true }
+insta = { workspace = true }
+
+[lints]
+workspace = true
