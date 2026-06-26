@@ -1,0 +1,54 @@
+[
+  {
+    "label": "Setup",
+    "command": "just setup"
+  },
+  {
+    "label": "Build",
+    "command": "just build"
+  },
+  {
+    "label": "Test",
+    "command": "just test"
+  },
+  {
+    "label": "Test crate",
+    "command": "just test-crate $ZED_CUSTOM_TERMS"
+  },
+  {
+    "label": "Test full",
+    "command": "just test-full"
+  },
+  {
+    "label": "Lint",
+    "command": "just lint"
+  },
+  {
+    "label": "Fmt",
+    "command": "just fmt"
+  },
+  {
+    "label": "Docs",
+    "command": "just docs"
+  },
+  {
+    "label": "Book",
+    "command": "just book"
+  },
+  {
+    "label": "Watch",
+    "command": "just watch"
+  },
+  {
+    "label": "Watch crate",
+    "command": "just watch-crate $ZED_CUSTOM_TERMS"
+  },
+  {
+    "label": "Release all",
+    "command": "just release-all"
+  },
+  {
+    "label": "CI",
+    "command": "just ci"
+  }
+]
