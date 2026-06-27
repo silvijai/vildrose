@@ -1,0 +1,11 @@
+# <type>: <subject (50 chars max)>
+# Examples: Fix trit addition carry logic, Add Word9 implementation
+#
+# <blank line>
+# <body (wrap at 72 chars)>
+# Explain WHAT changed and WHY, not HOW (code shows HOW)
+#
+# <blank line>
+# <footer>
+Signed-off-by: Your Name <your.email@example.com>
+# Assisted-by: (include if AI was involved)

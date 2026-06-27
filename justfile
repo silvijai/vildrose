@@ -15,7 +15,7 @@ test-crate crate:
     cargo nextest run -p {{ crate }}
 
 test-full:
-    cargo nextest run --workspace --include-ignored
+    cargo nextest run --workspace --run-ignored all
 
 lint:
     RUSTFLAGS="-D warnings" cargo clippy --workspace --all-targets
