@@ -6,6 +6,9 @@ on:
     pull_request:
         branches: ["**"]
 
+permissions:
+    contents: write
+
 jobs:
     docs:
         runs-on: ubuntu-24.04
@@ -27,15 +30,18 @@ jobs:
               with:
                   tool: mdbook
 
-            - name: Build mdBook and rustdoc
+            - name: Build rustdoc and test mdBook
               run: just docs
+
+            - name: Build mdBook site
+              run: mdbook build docs
 
             - name: Assemble Pages directory
               if: github.ref == 'refs/heads/main'
               run: |
                   mkdir -p public/book public/api
-                  cp -R target/mdbook/. public/book/
                   cp -R target/doc/. public/api/
+                  cp -R target/mdbook/. public/book/
                   cat > public/index.html <<'EOF'
                   <!doctype html>
                   <html lang="en">
