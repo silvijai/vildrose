@@ -30,11 +30,14 @@ jobs:
               with:
                   tool: mdbook
 
-            - name: Build rustdoc and test mdBook
-              run: just docs
+            - name: Build rustdoc
+              run: cargo doc --workspace --no-deps
+
+            - name: Test mdBook
+              run: mdbook test docs/
 
             - name: Build mdBook site
-              run: mdbook build docs
+              run: mdbook build docs/
 
             - name: Assemble Pages directory
               if: github.ref == 'refs/heads/main'
@@ -42,6 +45,23 @@ jobs:
                   mkdir -p public/book public/api
                   cp -R target/doc/. public/api/
                   cp -R target/mdbook/. public/book/
+                  touch public/api/.nojekyll
+                  touch public/book/.nojekyll
+
+                  cat > public/api/index.html <<'EOF'
+                  <!doctype html>
+                  <html lang="en">
+                  <meta charset="utf-8">
+                  <title>Vildrose API Docs</title>
+                  <body>
+                    <h1>Vildrose Crate Docs</h1>
+                    <ul>
+                      <li><a href="vildrose_core/index.html">vildrose_core</a></li>
+                    </ul>
+                  </body>
+                  </html>
+                  EOF
+
                   cat > public/index.html <<'EOF'
                   <!doctype html>
                   <html lang="en">
