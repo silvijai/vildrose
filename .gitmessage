@@ -1,6 +1,6 @@
-<type>: <subject>
+# <type>: <subject>
 
-<body explaining WHAT and WHY>
+# <body explaining WHAT and WHY>
 
-Signed-off-by: Silvija Ivanovaite <silvija@silvija.site>
-Assisted-by: Perplexity:sonnet-4.6-thinking, github-copilot:haiku-4.5
+Signed-off-by: name <email>
+# Assisted-by: Perplexity:sonnet-4.6-thinking, github-copilot:haiku-4.5

@@ -10,7 +10,7 @@ I am super fascinated by ternary as a concept, and want to try and implement it 
 
 ## Docs
 
-(Not yet implemented, should be available through docs branch in the future)
+There are two implementations of docs, one that is [books](https://silvijai.github.io/vildrose/book/), which is about project structure, ternary logic and general info. And the [API-docs](https://silvijai.github.io/vildrose/api/), which are the APIs from the crates.
 
 ## Roadmap
 
