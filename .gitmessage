@@ -1,11 +1,6 @@
-# <type>: <subject (50 chars max)>
-# Examples: Fix trit addition carry logic, Add Word9 implementation
-#
-# <blank line>
-# <body (wrap at 72 chars)>
-# Explain WHAT changed and WHY, not HOW (code shows HOW)
-#
-# <blank line>
-# <footer>
-Signed-off-by: Your Name <your.email@example.com>
-# Assisted-by: (include if AI was involved)
+<type>: <subject>
+
+<body explaining WHAT and WHY>
+
+Signed-off-by: Silvija Ivanovaite <silvija@silvija.site>
+Assisted-by: Perplexity:sonnet-4.6-thinking, github-copilot:haiku-4.5
