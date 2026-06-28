@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"macro":["define_word","impl_word_methods"],"struct":["Tryte","Word27"],"trait":["WordType"],"type":["Word9"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Trit"],"fn":["idx"],"static":["ADD_CARRY","ADD_SUM","CONSENSUS","TMAX","TMIN"]};
