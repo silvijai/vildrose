@@ -24,11 +24,19 @@ fmt:
     cargo fmt --all
     nixfmt flake.nix
 
-docs:
+api-docs:
     cargo doc --workspace --no-deps --open
+
+api-docs-test:
+    cargo doc --workspace --no-deps --document-private-items
 
 book:
     mdbook serve docs/
+
+book-test:
+    mdbook test docs/
+
+docs: api-docs-test book-test
 
 watch:
     bacon test
@@ -40,4 +48,9 @@ release-all:
     cargo zigbuild
 
 ci: lint test-full
+
+# Run before commiting to ensure that the code is in a good state
+check: ci api-docs-test book-test
     nix flake check
+    typos
+    cargo doc --workspace --no-deps --document-private-items

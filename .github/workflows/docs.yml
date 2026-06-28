@@ -1,0 +1,59 @@
+name: Docs
+
+on:
+    push:
+        branches: ["**"]
+    pull_request:
+        branches: ["**"]
+
+jobs:
+    docs:
+        runs-on: ubuntu-24.04
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Install Rust toolchain
+              uses: dtolnay/rust-toolchain@stable
+
+            - name: Cache Rust build artifacts
+              uses: Swatinem/rust-cache@v2
+
+            - name: Install just
+              uses: extractions/setup-just@v2
+
+            - name: Install mdbook
+              uses: taiki-e/install-action@v2
+              with:
+                  tool: mdbook
+
+            - name: Build mdBook and rustdoc
+              run: just docs
+
+            - name: Assemble Pages directory
+              if: github.ref == 'refs/heads/main'
+              run: |
+                  mkdir -p public/book public/api
+                  cp -R target/mdbook/. public/book/
+                  cp -R target/doc/. public/api/
+                  cat > public/index.html <<'EOF'
+                  <!doctype html>
+                  <html lang="en">
+                  <meta charset="utf-8">
+                  <title>Vildrose Docs</title>
+                  <body>
+                    <h1>Vildrose Docs</h1>
+                    <ul>
+                      <li><a href="./book/">Book</a></li>
+                      <li><a href="./api/">API</a></li>
+                    </ul>
+                  </body>
+                  </html>
+                  EOF
+
+            - name: Deploy to GitHub Pages
+              if: github.ref == 'refs/heads/main'
+              uses: peaceiris/actions-gh-pages@v3
+              with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  publish_dir: ./public

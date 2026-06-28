@@ -1,0 +1,14 @@
+[book]
+title = "Vildrose"
+authors = ["silvijai"]
+language = "en"
+src = "src"
+
+[build]
+build-dir = "../target/mdbook"
+
+[output.html]
+git-repository-url = "https://github.com/silvijai/vildrose"
+edit-url-template = "https://github.com/silvijai/vildrose/edit/main/docs/src/{path}"
+default-theme = "Light"
+preferred-dark-theme = "Ayu"
