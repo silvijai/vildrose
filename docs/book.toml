@@ -12,3 +12,8 @@ git-repository-url = "https://github.com/silvijai/vildrose"
 edit-url-template = "https://github.com/silvijai/vildrose/edit/main/docs/src/{path}"
 default-theme = "Light"
 preferred-dark-theme = "Ayu"
+
+[preprocessor.d2]
+path = "d2"
+layout = "dagre"
+inline = true

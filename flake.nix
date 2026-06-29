@@ -71,6 +71,8 @@
 
             # Documentation
             pkgs.mdbook
+            pkgs.mdbook-d2
+            pkgs.d2
 
             # Changelog
             pkgs.git-cliff

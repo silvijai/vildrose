@@ -30,6 +30,12 @@ jobs:
               with:
                   tool: mdbook
 
+            - name: Install mdbook-d2
+              run: cargo install mdbook-d2 --locked
+
+            - name: Install D2
+              run: curl -fsSL https://d2lang.com/install.sh | sh -s --
+
             - name: Build rustdoc
               run: cargo doc --workspace --no-deps
 
