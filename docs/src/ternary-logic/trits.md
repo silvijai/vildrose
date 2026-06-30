@@ -49,7 +49,7 @@ There is also an argument that ternary could unlock the ability to get more perf
 
 ### How does the computer hold states?
 
-The way a computer reads a 0 or a 1, is based on the voltage (V) that is delivered to the processor. For most common processors and logic gates, 0 will be 0V and 1 will be between 1V and 1,5V. You might be used to 1 being 5V for IC logic gates, but this is not standard for modern CPUs. For ternary, multiple voltage values have been suggested, Huaweis chip for for example uses CNTFETs, compared to CMOS, the standard of binary, and it uses 0V for 0, 1,65V for +1 and 3,3V for -1[^2]. I will hopefully have more to say on this topic [ternary-logic](ternary-logic.md)
+The way a computer reads a 0 or a 1, is based on the voltage (V) that is delivered to the processor. For most common processors and logic gates, 0 will be 0V and 1 will be between 1V and 1,5V. You might be used to 1 being 5V for IC logic gates, but this is not standard for modern CPUs. For ternary, multiple voltage values have been suggested, Huaweis chip for for example uses CNTFETs, compared to CMOS, the standard of binary, and it uses 0V for 0, 1,65V for +1 and 3,3V for -1[^2]. I will hopefully have more to say on this topic [ternary-logic](ternary-logic.md).
 
 [^2]: [Meta-quantum: Huawei has officially unveiled the world’s first ternary logic chip](https://meta-quantum.today/?p=7960) (I don't like this source, but it has the voltage values. I am not proud to use it, so I need to find better research in the future.)
 

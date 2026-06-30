@@ -35,6 +35,15 @@
             "rustfmt"
             "llvm-tools-preview"
           ];
+          targets = [
+            "x86_64-unknown-linux-gnu"
+            "aarch64-unknown-linux-gnu"
+            "x86_64-pc-windows-gnu"
+            "aarch64-pc-windows-gnullvm"
+            "x86_64-apple-darwin"
+            "aarch64-apple-darwin"
+            "riscv64gc-unknown-linux-gnu"
+          ];
         };
 
         python = pkgs.python313;
@@ -94,8 +103,8 @@
 
           shellHook = ''
             echo ""
-            echo "  vildrose dev  ($(rustc --version))"
-            echo "  just          — list all recipes"
+            echo "vildrose dev ($(rustc --version))"
+            echo "just — list all recipes"
             echo ""
           '';
         };

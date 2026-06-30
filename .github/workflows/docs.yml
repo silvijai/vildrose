@@ -1,91 +1,64 @@
 name: Docs
 
 on:
-    push:
-        branches: ["**"]
-    pull_request:
-        branches: ["**"]
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
 
 permissions:
-    contents: write
+  contents: write
 
 jobs:
-    docs:
-        runs-on: ubuntu-24.04
+  docs:
+    runs-on: ubuntu-24.04
 
-        steps:
-            - uses: actions/checkout@v4
+    steps:
+      - uses: actions/checkout@v4
 
-            - name: Install Rust toolchain
-              uses: dtolnay/rust-toolchain@stable
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
 
-            - name: Cache Rust build artifacts
-              uses: Swatinem/rust-cache@v2
+      - name: Cache Rust build artifacts
+        uses: Swatinem/rust-cache@v2
 
-            - name: Install just
-              uses: extractions/setup-just@v2
+      - name: Install mdbook
+        uses: taiki-e/install-action@v2
+        with:
+          tool: mdbook
 
-            - name: Install mdbook
-              uses: taiki-e/install-action@v2
-              with:
-                  tool: mdbook
+      - name: Install mdbook-d2
+        run: cargo install mdbook-d2 --locked
 
-            - name: Install mdbook-d2
-              run: cargo install mdbook-d2 --locked
+      - name: Install D2
+        run: curl -fsSL https://d2lang.com/install.sh | sh -s --
 
-            - name: Install D2
-              run: curl -fsSL https://d2lang.com/install.sh | sh -s --
+      - name: Build rustdoc
+        run: cargo doc --workspace --no-deps
 
-            - name: Build rustdoc
-              run: cargo doc --workspace --no-deps
+      - name: Test mdBook
+        run: mdbook test docs/
 
-            - name: Test mdBook
-              run: mdbook test docs/
+      - name: Build mdBook site
+        run: mdbook build docs/
 
-            - name: Build mdBook site
-              run: mdbook build docs/
+      - name: Assemble Pages directory
+        if: github.ref == 'refs/heads/main'
+        run: |
+          rm -rf public
+          mkdir -p public
 
-            - name: Assemble Pages directory
-              if: github.ref == 'refs/heads/main'
-              run: |
-                  mkdir -p public/book public/api
-                  cp -R target/doc/. public/api/
-                  cp -R target/mdbook/. public/book/
-                  touch public/api/.nojekyll
-                  touch public/book/.nojekyll
+          cp -R docs/site/. public/
+          cp -R target/mdbook/. public/book/
+          cp -R target/doc/. public/api/
 
-                  cat > public/api/index.html <<'EOF'
-                  <!doctype html>
-                  <html lang="en">
-                  <meta charset="utf-8">
-                  <title>Vildrose API Docs</title>
-                  <body>
-                    <h1>Vildrose Crate Docs</h1>
-                    <ul>
-                      <li><a href="vildrose_core/index.html">vildrose_core</a></li>
-                    </ul>
-                  </body>
-                  </html>
-                  EOF
+          touch public/.nojekyll
+          touch public/book/.nojekyll
+          touch public/api/.nojekyll
 
-                  cat > public/index.html <<'EOF'
-                  <!doctype html>
-                  <html lang="en">
-                  <meta charset="utf-8">
-                  <title>Vildrose Docs</title>
-                  <body>
-                    <h1>Vildrose Docs</h1>
-                    <ul>
-                      <li><a href="./book/">Book</a></li>
-                      <li><a href="./api/">API</a></li>
-                    </ul>
-                  </body>
-                  </html>
-                  EOF
-
-            - name: Deploy to GitHub Pages
-              if: github.ref == 'refs/heads/main'
-              uses: peaceiris/actions-gh-pages@v3
-              with:
-                  github_token: ${{ secrets.GITHUB_TOKEN }}
-                  publish_dir: ./public
+      - name: Deploy to GitHub Pages
+        if: github.ref == 'refs/heads/main'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
