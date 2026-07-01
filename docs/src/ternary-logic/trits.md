@@ -7,7 +7,7 @@ We already have precedent for how bits can be used to represent numbers, which i
 Okay okay, so what even is a trit? We now know that a binary bit is a the smallest unit of data on a binary platform, so a trit must be the same, but for ternary? Yes. In ternary computing, the smallest unit of data is trit. A trit being a 3 state unit, with -1 / N (for negative), 0 / Z (for zero) and (+)1 / P (for positive).
 
 There are a couple of standards for representing trits in a human readable format. With binary we're used to 0 and 1, but with ternary, a precedent hasn't been set yet. Some people use:
-```Text
+```text
 Unbalanced ternary:
  0 0.5 1
  0  /  1  (Sometimes can be another character than "/")
