@@ -1,5 +1,5 @@
 (function() {
-    const implementors = Object.fromEntries([["vildrose_core",[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.96.0/core/cmp/trait.PartialOrd.html\" title=\"trait core::cmp::PartialOrd\">PartialOrd</a> for <a class=\"enum\" href=\"vildrose_core/trit/enum.Trit.html\" title=\"enum vildrose_core::trit::Trit\">Trit</a>",0]]]]);
+    const implementors = Object.fromEntries([["vildrose_core",[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.96.1/core/cmp/trait.PartialOrd.html\" title=\"trait core::cmp::PartialOrd\">PartialOrd</a> for <a class=\"enum\" href=\"vildrose_core/trit/enum.Trit.html\" title=\"enum vildrose_core::trit::Trit\">Trit</a>",0]]]]);
     if (window.register_implementors) {
         window.register_implementors(implementors);
     } else {
