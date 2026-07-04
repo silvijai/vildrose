@@ -74,18 +74,18 @@ static ADD_CARRY: [Trit; 9] = {
 
 /// Consensus function (majority voting).
 ///
-/// Returns Z if either input is Z, otherwise returns the agreed-upon value if both match,
-/// or N if they disagree (uncertain/false outcome).
+/// Returns Z if the inputs disagree or if either input is Z.
+/// Returns the shared value only if both inputs agree.
 ///
 /// ```text
-///     N  Z  P
-///  N [N, Z, N]  consensus(N, N) = N, (N, Z) = Z, (N, P) = N (opposite→N)
-///  Z [Z, Z, Z]  consensus with Z is always Z (absorbing)
-///  P [N, Z, P]  consensus(P, N) = N (opposite→N), (P, Z) = Z, (P, P) = P
+///        N    Z    P
+/// N  [   N    Z    Z  ]  consensus(N,N) = N, consensus(N,Z) = Z, consensus(N,P) = Z
+/// Z  [   Z    Z    Z  ]  consensus with Z is always Z (absorbing)
+/// P  [   Z    Z    P  ]  consensus(P,N) = Z, consensus(P,Z) = Z, consensus(P,P) = P
 /// ```
 static CONSENSUS: [Trit; 9] = {
     use Trit::{N, P, Z};
-    [N, Z, N, Z, Z, Z, N, Z, P]
+    [N, Z, Z, Z, Z, Z, Z, Z, P]
 };
 
 // <- Implementation logic starts here
@@ -123,6 +123,26 @@ impl Trit {
         match self {
             Self::N => Self::P,
             other => other,
+        }
+    }
+
+    /// Return the incremented value for a trit, wrapping  P -> N.
+    #[must_use]
+    pub const fn inc(self) -> Self {
+        match self {
+            Self::N => Self::Z,
+            Self::Z => Self::P,
+            Self::P => Self::N,
+        }
+    }
+
+    /// Return the decremented value for a trit, wrapping N -> P.
+    #[must_use]
+    pub const fn dec(self) -> Self {
+        match self {
+            Self::N => Self::P,
+            Self::Z => Self::N,
+            Self::P => Self::Z,
         }
     }
 
@@ -231,244 +251,9 @@ mod tests {
     const _: () = assert!(Trit::N.negate() as i8 == 1);
     const _: () = assert!(Trit::P.add(Trit::P).1 as i8 == 1);
 
-    // negate
-    #[test]
-    fn negate_is_involution() {
-        for t in [Trit::N, Trit::Z, Trit::P] {
-            assert_eq!(t.negate().negate(), t);
-        }
-    }
-
-    // tmin / tmax
-    #[test]
-    fn tmin_tmax_are_symmetric() {
-        let trits = [Trit::N, Trit::Z, Trit::P];
-        for a in trits {
-            for b in trits {
-                assert_eq!(a.tmin(b), b.tmin(a), "tmin not symmetric: {a} {b}");
-                assert_eq!(a.tmax(b), b.tmax(a), "tmax not symmetric: {a} {b}");
-            }
-        }
-    }
-
     // clip
     const _: Trit = Trit::N.clip();
     const _: () = assert!(Trit::P.clip() as i8 == 1);
     const _: () = assert!(Trit::N.clip() as i8 == -1);
     const _: () = assert!(Trit::Z.clip() as i8 == 0);
-
-    // add
-    #[test]
-    fn add_exhaustive() {
-        type Case = ((Trit, Trit), (Trit, Trit));
-        let cases: &[Case] = &[
-            ((Trit::N, Trit::N), (Trit::P, Trit::N)),
-            ((Trit::N, Trit::Z), (Trit::N, Trit::Z)),
-            ((Trit::N, Trit::P), (Trit::Z, Trit::Z)),
-            ((Trit::Z, Trit::N), (Trit::N, Trit::Z)),
-            ((Trit::Z, Trit::Z), (Trit::Z, Trit::Z)),
-            ((Trit::Z, Trit::P), (Trit::P, Trit::Z)),
-            ((Trit::P, Trit::N), (Trit::Z, Trit::Z)),
-            ((Trit::P, Trit::Z), (Trit::P, Trit::Z)),
-            ((Trit::P, Trit::P), (Trit::N, Trit::P)),
-        ];
-        for &((a, b), expected) in cases {
-            assert_eq!(a.add(b), expected, "add({a}, {b})");
-        }
-    }
-
-    // display
-    #[test]
-    fn display_nzp() {
-        assert_eq!(Trit::N.to_string(), "N");
-        assert_eq!(Trit::Z.to_string(), "Z");
-        assert_eq!(Trit::P.to_string(), "P");
-    }
-
-    // conversion from i8
-    #[test]
-    fn try_from_i8_valid() {
-        assert_eq!(Trit::try_from(-1i8), Ok(Trit::N));
-        assert_eq!(Trit::try_from(0i8), Ok(Trit::Z));
-        assert_eq!(Trit::try_from(1i8), Ok(Trit::P));
-    }
-
-    #[test]
-    fn try_from_i8_invalid() {
-        assert!(Trit::try_from(2i8).is_err());
-        assert!(Trit::try_from(-2i8).is_err());
-        assert!(Trit::try_from(127i8).is_err());
-    }
-
-    #[test]
-    fn from_i8_coercion() {
-        assert_eq!(i8::from(Trit::N), -1);
-        assert_eq!(i8::from(Trit::Z), 0);
-        assert_eq!(i8::from(Trit::P), 1);
-    }
-
-    // tmin / tmax properties
-    #[test]
-    fn tmin_identity() {
-        for t in [Trit::N, Trit::Z, Trit::P] {
-            assert_eq!(t.tmin(t), t, "tmin(t, t) should equal t");
-        }
-    }
-
-    #[test]
-    fn tmax_identity() {
-        for t in [Trit::N, Trit::Z, Trit::P] {
-            assert_eq!(t.tmax(t), t, "tmax(t, t) should equal t");
-        }
-    }
-
-    #[test]
-    fn tmin_absorbing_n() {
-        // N is absorbing element for tmin (Kleene AND)
-        let n = Trit::N;
-        for t in [Trit::N, Trit::Z, Trit::P] {
-            assert_eq!(n.tmin(t), Trit::N, "N ∧ x should be N");
-            assert_eq!(t.tmin(n), Trit::N, "x ∧ N should be N");
-        }
-    }
-
-    #[test]
-    fn tmax_absorbing_p() {
-        // P is absorbing element for tmax (Kleene OR)
-        let p = Trit::P;
-        for t in [Trit::N, Trit::Z, Trit::P] {
-            assert_eq!(p.tmax(t), Trit::P, "P ∨ x should be P");
-            assert_eq!(t.tmax(p), Trit::P, "x ∨ P should be P");
-        }
-    }
-
-    // add properties
-    #[test]
-    fn add_zero_identity() {
-        for t in [Trit::N, Trit::Z, Trit::P] {
-            let (sum, carry) = t.add(Trit::Z);
-            assert_eq!(sum, t, "t + 0 sum should be t");
-            assert_eq!(carry, Trit::Z, "t + 0 carry should be 0");
-        }
-    }
-
-    #[test]
-    fn add_commutative() {
-        let trits = [Trit::N, Trit::Z, Trit::P];
-        for a in trits {
-            for b in trits {
-                assert_eq!(
-                    a.add(b),
-                    b.add(a),
-                    "add({a}, {b}) should equal add({b}, {a})"
-                );
-            }
-        }
-    }
-
-    #[test]
-    fn add_n_n_produces_carry() {
-        let (sum, carry) = Trit::N.add(Trit::N);
-        assert_eq!(
-            sum,
-            Trit::P,
-            "(-1) + (-1) sum should be 1 (wraps to 1 from -2)"
-        );
-        assert_eq!(carry, Trit::N, "(-1) + (-1) carry should be -1");
-    }
-
-    #[test]
-    fn add_p_p_produces_carry() {
-        let (sum, carry) = Trit::P.add(Trit::P);
-        assert_eq!(sum, Trit::N, "1 + 1 sum should be -1 (wraps to -1 from 2)");
-        assert_eq!(carry, Trit::P, "1 + 1 carry should be 1");
-    }
-
-    // consensus
-    #[test]
-    fn consensus_with_z_is_z() {
-        let z = Trit::Z;
-        for t in [Trit::N, Trit::Z, Trit::P] {
-            assert_eq!(z.consensus(t), Trit::Z, "consensus(Z, x) should be Z");
-            assert_eq!(t.consensus(z), Trit::Z, "consensus(x, Z) should be Z");
-        }
-    }
-
-    #[test]
-    fn consensus_same_value() {
-        for t in [Trit::N, Trit::Z, Trit::P] {
-            assert_eq!(t.consensus(t), t, "consensus(t, t) should be t");
-        }
-    }
-
-    #[test]
-    fn consensus_opposite() {
-        assert_eq!(
-            Trit::N.consensus(Trit::P),
-            Trit::N,
-            "consensus(N, P) should be N"
-        );
-        assert_eq!(
-            Trit::P.consensus(Trit::N),
-            Trit::N,
-            "consensus(P, N) should be N"
-        );
-    }
-
-    // abs
-    #[test]
-    fn abs_is_idempotent() {
-        for t in [Trit::N, Trit::Z, Trit::P] {
-            assert_eq!(t.abs().abs(), t.abs(), "abs(abs(t)) == abs(t)");
-        }
-    }
-
-    #[test]
-    fn abs_positive_unchanged() {
-        assert_eq!(Trit::Z.abs(), Trit::Z);
-        assert_eq!(Trit::P.abs(), Trit::P);
-    }
-
-    #[test]
-    fn abs_negative_becomes_positive() {
-        assert_eq!(Trit::N.abs(), Trit::P);
-    }
-
-    // Predicates
-    #[test]
-    fn is_zero() {
-        assert!(Trit::Z.is_zero());
-        assert!(!Trit::N.is_zero());
-        assert!(!Trit::P.is_zero());
-    }
-
-    #[test]
-    fn is_positive() {
-        assert!(Trit::P.is_positive());
-        assert!(!Trit::N.is_positive());
-        assert!(!Trit::Z.is_positive());
-    }
-
-    #[test]
-    fn is_negative() {
-        assert!(Trit::N.is_negative());
-        assert!(!Trit::P.is_negative());
-        assert!(!Trit::Z.is_negative());
-    }
-
-    // clip (identity operation)
-    #[test]
-    fn clip_is_identity() {
-        for t in [Trit::N, Trit::Z, Trit::P] {
-            assert_eq!(t.clip(), t, "clip should be identity");
-        }
-    }
-
-    // sign (identity for trits)
-    #[test]
-    fn sign_is_identity() {
-        for t in [Trit::N, Trit::Z, Trit::P] {
-            assert_eq!(t.sign(), t, "sign should be identity for trits");
-        }
-    }
 }

@@ -1,0 +1,3 @@
+disallowed-methods = [
+    { path = "std::ops::Div::div", reason = "use checked_div — panicking division is not allowed in the VM execute loop, must trap instead" },
+]

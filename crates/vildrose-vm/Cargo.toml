@@ -1,6 +1,6 @@
 [package]
-name = "vildrose-core"
-description = "Balanced ternary primitives: Trit, Tryte / Word9, Word27, Word54, Kleene logic, arithmetic."
+name = "vildrose-vm"
+description = "VM - Not yet implemented"
 
 version.workspace = true
 edition.workspace = true
@@ -16,7 +16,7 @@ categories.workspace = true
 # Consider having some in the future
 
 [dependencies]
-# Intentionally empty — vildrose-core has no external dependencies.
+
 
 [dev-dependencies]
 proptest = { workspace = true }

@@ -16,6 +16,7 @@ Unbalanced ternary:
 Balanced ternary:
  -  0  +
 -1  0  1
+ T  0  1
  N  Z  P
 ```
 

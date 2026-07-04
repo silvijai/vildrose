@@ -29,20 +29,10 @@ keywords = ["ternary", "balanced-ternary", "vm", "computing"]
 categories = ["emulators", "science"]
 
 [workspace.dependencies]
-vildrose-core = { path = "crates/vildrose-core" }
-vildrose-isa = { path = "crates/vildrose-isa" }
-vildrose-vm = { path = "crates/vildrose-vm" }
-vildrose-asm = { path = "crates/vildrose-asm" }
 
 # Testing
 proptest = "1"
 insta = { version = "1", features = ["ron"] }
-
-# Error handling
-thiserror = "2"
-
-# Python bindings (vildrose-py only)
-pyo3 = { version = "0.23", features = ["extension-module"] }
 
 [workspace.lints.rust]
 unsafe_code    = "forbid"

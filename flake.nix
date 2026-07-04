@@ -87,7 +87,7 @@
             pkgs.git-cliff
 
             # Nix formatting
-            pkgs.nixfmt-rfc-style
+            pkgs.nixfmt
 
             # Utilities
             pkgs.jujutsu

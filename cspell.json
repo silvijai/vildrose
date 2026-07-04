@@ -28,7 +28,8 @@
     "Nemunas",
     "Snerle",
     "Mirabelle",
-    "Setun"
+    "Setun",
+    "CNTFET"
   ],
   "ignorePaths": [".direnv", "target", ".git", ".jj"],
   "useGitignore": true
