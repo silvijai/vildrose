@@ -2,6 +2,7 @@
 
 [Introduction](readme.md)
 [Ternary Primer](ternary-primer.md)
+[Project Phases](project-phases.md)
 
 # Ternary logic
 
