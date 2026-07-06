@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["trit","word"]};
+window.SIDEBAR_ITEMS = {"mod":["kleene","trit","word"]};
