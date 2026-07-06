@@ -183,6 +183,17 @@ impl Trit {
         TMAX[idx(self) * 3 + idx(other)]
     }
 
+    /// Tritwise NOT (follows Kleene NOT logic).
+    #[must_use]
+    #[inline]
+    pub const fn tnot(self) -> Self {
+        match self {
+            Self::N => Self::P,
+            Self::Z => Self::Z,
+            Self::P => Self::N,
+        }
+    }
+
     /// Returns the sign of a trit (returns itself)
     #[must_use]
     #[inline]

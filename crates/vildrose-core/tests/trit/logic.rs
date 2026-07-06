@@ -26,6 +26,13 @@ fn tmax_identity() {
 }
 
 #[test]
+fn tnot_identity() {
+    for t in [Trit::N, Trit::Z, Trit::P] {
+        assert_eq!(t.tnot().tnot(), t, "tnot(tnot(t)) should equal t");
+    }
+}
+
+#[test]
 fn tmin_absorbing_n() {
     // N is absorbing element for tmin (Kleene AND)
     let n = Trit::N;
@@ -42,6 +49,13 @@ fn tmax_absorbing_p() {
     for t in [Trit::N, Trit::Z, Trit::P] {
         assert_eq!(p.tmax(t), Trit::P, "P ∨ x should be P");
         assert_eq!(t.tmax(p), Trit::P, "x ∨ P should be P");
+    }
+}
+
+#[test]
+fn tnot_involution() {
+    for t in [Trit::N, Trit::Z, Trit::P] {
+        assert_eq!(t.tnot().tnot(), t, "¬(¬x) should be x");
     }
 }
 
