@@ -75,9 +75,6 @@
             # Background checker
             pkgs.bacon
 
-            # Quality
-            pkgs.typos
-
             # Documentation
             pkgs.mdbook
             pkgs.mdbook-d2

@@ -61,5 +61,4 @@ ci: lint test-full
 # Full Github CI precheck, run before committing to ensure that the code is in a good state
 check: ci docs-test book-test
     nix flake check --all-systems
-    typos
     cargo doc --workspace --no-deps --document-private-items

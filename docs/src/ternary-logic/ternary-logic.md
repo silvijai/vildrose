@@ -1,5 +1,7 @@
 # Logic gates
 
+#### Notes for future writing
+
 https://www.sciencedirect.com/science/article/pii/S2590123024010168
 
 https://louis-dr.github.io/ternlogic.html
