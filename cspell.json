@@ -9,7 +9,8 @@
     "Tmax",
     "Tnot",
     "Tclip",
-    "tsign",
+    "tsignum",
+    "signum",
     "tconsensus",
     "tshl",
     "tshr",
@@ -30,7 +31,9 @@
     "Snerle",
     "Mirabelle",
     "Setun",
-    "CNTFET"
+    "CNTFET",
+    "CNTFETs",
+    "Setnex",
   ],
   "ignorePaths": [".direnv", "target", ".git", ".jj"],
   "useGitignore": true

@@ -97,23 +97,26 @@ fn tryte_tshl_large_shift() {
 }
 
 #[test]
-fn tryte_tshr_large_shift() {
-    let t = Tryte::new([
-        Trit::P,
-        Trit::N,
-        Trit::P,
-        Trit::Z,
-        Trit::Z,
-        Trit::Z,
-        Trit::Z,
-        Trit::Z,
-        Trit::Z,
-    ]);
-    let sign = t.sign();
-    let shifted = t.tshr(10);
-    for i in 0..9 {
-        assert_eq!(shifted.trit(i), sign);
-    }
+fn tryte_tshr_large_shift_fills_with_positive_sign() {
+    let value = Tryte::from_int(1).unwrap();
+
+    let shifted = value.tshr(Tryte::TRIT_COUNT);
+
+    assert_eq!(shifted, Tryte::from_trits([Trit::P; Tryte::TRIT_COUNT]));
+}
+
+#[test]
+fn tryte_tshr_large_shift_fills_with_negative_sign() {
+    let value = Tryte::from_int(-1).unwrap();
+
+    let shifted = value.tshr(Tryte::TRIT_COUNT);
+
+    assert_eq!(shifted, Tryte::from_trits([Trit::N; Tryte::TRIT_COUNT]));
+}
+
+#[test]
+fn tryte_tshr_large_shift_of_zero_is_zero() {
+    assert_eq!(Tryte::zero().tshr(Tryte::TRIT_COUNT), Tryte::zero());
 }
 
 #[test]

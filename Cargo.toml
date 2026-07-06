@@ -2,19 +2,18 @@
 resolver = "3"
 members = [
     "crates/vildrose-core",
-    # "crates/vildrose-isa",
-    # "crates/vildrose-vm",
-    # "crates/vildrose-asm",
+    "crates/vildrose-isa",
+    "crates/hyldeblomst",
     # "crates/vildrose-dbg",
-    # "crates/vildrose-display",
-    # "crates/vildrose-rv32i",
-    # "crates/vildrose-py",
 ]
 
 # Only build active crates with bare `cargo build`.
 # Expand this list as each phase is reached.
 default-members = [
     "crates/vildrose-core",
+    "crates/vildrose-isa",
+    "crates/hyldeblomst",
+    # "crates/vildrose-dbg",
 ]
 
 [workspace.package]
@@ -29,14 +28,16 @@ keywords = ["ternary", "balanced-ternary", "vm", "computing"]
 categories = ["emulators", "science"]
 
 [workspace.dependencies]
+vildrose-core = { path = "crates/vildrose-core" }
+vildrose-isa = { path = "crates/vildrose-isa" }
 
 # Testing
 proptest = "1"
 insta = { version = "1", features = ["ron"] }
 
 [workspace.lints.rust]
-unsafe_code    = "forbid"
-missing_docs   = "warn"
+unsafe_code = "forbid"
+missing_docs = "warn"
 unused_results = "warn"
 
 [workspace.lints.clippy]

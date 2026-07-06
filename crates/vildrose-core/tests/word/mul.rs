@@ -1,4 +1,4 @@
-use vildrose_core::word::{Tryte, Word27, Word54, WordType};
+use vildrose_core::word::{Tryte, Word27, Word54};
 
 #[test]
 fn tryte_mul_by_zero_is_zero() {

@@ -66,7 +66,7 @@ fn tryte_trit_access() {
 }
 
 #[test]
-#[should_panic(expected = "Index out of bounds")]
+#[should_panic(expected = "index out of bounds")]
 fn tryte_trit_out_of_bounds() {
     let t = Tryte::zero();
     let _ = t.trit(9);
@@ -132,7 +132,7 @@ fn word9_trit_access() {
 }
 
 #[test]
-#[should_panic(expected = "Index out of bounds")]
+#[should_panic(expected = "index out of bounds")]
 fn word9_trit_out_of_bounds() {
     let w = Word9::zero();
     let _ = w.trit(9);
@@ -234,7 +234,7 @@ fn word27_trit_access() {
 }
 
 #[test]
-#[should_panic(expected = "Index out of bounds")]
+#[should_panic(expected = "index out of bounds")]
 fn word27_trit_out_of_bounds() {
     let w = Word27::zero();
     let _ = w.trit(27);

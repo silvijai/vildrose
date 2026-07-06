@@ -2,24 +2,28 @@
 //!
 //! # Types
 //! - [`Tryte`] (alias [`Word9`]) — 9 trits, range ±9,841
-//! - [`Word27`] — 27 trits, range ±193,710,244
-//! - [`Word54`] — 54 trits, primary register width
+//! - [`Word27`] — 27 trits, range ±3,812,798,742,493
+//! - [`Word54`] — 54 trits, extended-width arithmetic value
 //!
 //! # Method Groups
-//! Each word type exposes methods grouped as: construction, sign/magnitude,
-//! tritwise logic, shifts, and arithmetic (via [`std::ops`] traits
-//! and [`WordType`]/[`CheckedDiv`]).
+//!
+//! Each word type exposes methods for construction, sign and magnitude,
+//! tritwise logic, shifts, and arithmetic through standard [`std::ops`]
+//! traits and [`CheckedDiv`].
 //!
 //! # Cross-Width Arithmetic
 //!
-//! Operations between different word widths (e.g. `Tryte + Word27`) widen the
-//! narrower operand before performing the operation; the result is always the
-//! wider type. This applies uniformly to `Add`, `Sub`, `Mul`, `Div`, and `CheckedDiv`.
+//! Operations between different word widths, such as `Tryte + Word27`,
+//! sign-extend the narrower operand before computing. The result is always
+//! the wider word type. This applies to `Add`, `Sub`, `Mul`, `Div`, and
+//! [`CheckedDiv`].
 
 use crate::ops::{ripple_add, widen};
 use crate::trit::Trit;
+use core::fmt;
 
 // TODO: This file needs to be structure better, especially with the API doc in mind
+// TODO: Rework errors
 
 // <- Macros defined here
 macro_rules! define_word {
@@ -40,12 +44,16 @@ macro_rules! impl_word_methods {
     ($name:ident, $width:literal) => {
         /// ## Construction
         impl $name {
-            /// Creates a new word filled with zeros
+            /// Number of trits in this word.
+            pub const TRIT_COUNT: usize = $width;
+
+            // TODO: Consider removing this or from_trits, as they are redundant with the constructor
+            /// Creates a word from trits in least-significant-first order.
             pub const fn new(t: [Trit; $width]) -> Self {
                 Self(t)
             }
 
-            /// Creates a new word from an array of trits
+            /// Creates a word from trits in least-significant-first order.
             pub const fn from_trits(trits: [Trit; $width]) -> Self {
                 Self(trits)
             }
@@ -55,19 +63,30 @@ macro_rules! impl_word_methods {
                 Self([Trit::Z; $width])
             }
 
-            /// Returns the trit at the given index, panicking if the index is out of bounds.
-            pub fn trit(&self, i: usize) -> Trit {
-                if i < $width {
-                    self.0[i]
-                } else {
-                    panic!("Index out of bounds for {}: {}", stringify!($name), i);
-                }
+            /// Returns the trit at `index`, or `None` if `index` is out of bounds.
+            ///
+            /// Trit index `0` is the least-significant trit.
+            #[must_use]
+            pub fn get_trit(&self, index: usize) -> Option<Trit> {
+                self.0.get(index).copied()
+            }
+
+            /// Returns the trit at `index`.
+            ///
+            /// Trit index `0` is the least-significant trit.
+            ///
+            /// # Panics
+            ///
+            /// Panics if `index >= Self::TRIT_COUNT`.
+            #[must_use]
+            pub const fn trit(&self, index: usize) -> Trit {
+                self.0[index]
             }
         }
 
         /// ## Sign and magnitude
         impl $name {
-            /// Returns the inverted (negated) form of the word
+            /// Returns the numeric negation of this balanced ternary word.
             #[must_use]
             pub fn negate(&self) -> Self {
                 Self(self.0.map(|t| t.negate()))
@@ -97,19 +116,21 @@ macro_rules! impl_word_methods {
 
         /// ## Tritwise logic
         impl $name {
-            /// Returns the minimum of two words, element-wise
+            /// Returns the component-wise minimum of two words.
             #[must_use]
             pub fn tmin(&self, rhs: Self) -> Self {
                 Self(std::array::from_fn(|i| self.0[i].tmin(rhs.0[i])))
             }
 
-            /// Returns the maximum of two words, element-wise
+            /// Returns the component-wise maximum of two words.
             #[must_use]
             pub fn tmax(&self, rhs: Self) -> Self {
                 Self(std::array::from_fn(|i| self.0[i].tmax(rhs.0[i])))
             }
 
-            /// Returns the tritwise negation of the word
+            /// Returns the tritwise ternary negation of this word.
+            ///
+            /// Each `N` becomes `P`, each `P` becomes `N`, and `Z` remains `Z`.
             #[must_use]
             pub fn tnot(&self) -> Self {
                 Self(self.0.map(|t| t.negate()))
@@ -121,14 +142,15 @@ macro_rules! impl_word_methods {
                 Self(self.0.map(|t| t.clip()))
             }
 
-            /// Returns the tritwise sign of the word
+            /// Returns the word-valued numeric sign: `-1`, `0`, or `+1`.
             #[must_use]
-            pub fn tsign(&self) -> Self {
-                let s = self.sign();
-                Self(std::array::from_fn(|i| if i == 0 { s } else { Trit::Z }))
+            pub fn signum(&self) -> Self {
+                Self(std::array::from_fn(|index| {
+                    if index == 0 { self.sign() } else { Trit::Z }
+                }))
             }
 
-            /// Returns the tritwise consensus of two words
+            /// Returns the tritwise consensus of two words.
             #[must_use]
             pub fn tconsensus(&self, rhs: Self) -> Self {
                 Self(std::array::from_fn(|i| self.0[i].consensus(rhs.0[i])))
@@ -139,27 +161,54 @@ macro_rules! impl_word_methods {
         impl $name {
             /// Trit shift left by n positions, filling with zeros
             #[must_use]
-            pub fn tshl(&self, n: usize) -> Self {
-                Self(std::array::from_fn(|i| {
-                    if i < n { Trit::Z } else { self.0[i - n] }
+            pub fn tshl(&self, count: usize) -> Self {
+                Self(std::array::from_fn(|index| {
+                    if index < count {
+                        Trit::Z
+                    } else {
+                        self.0[index - count]
+                    }
                 }))
             }
 
-            /// Trit shift right by n positions, filling with the sign of the word
+            /// Returns the arithmetic right shift by `count` trits.
+            ///
+            /// Vacated most-significant trits are filled with the word's sign.
+            /// If `count >= Self::TRIT_COUNT`, every trit is filled with the sign.
             #[must_use]
-            pub fn tshr(&self, n: usize) -> Self {
+            pub fn tshr(&self, count: usize) -> Self {
                 let sign = self.sign();
-                Self(std::array::from_fn(|i| {
-                    if i + n < $width { self.0[i + n] } else { sign }
+
+                if count >= Self::TRIT_COUNT {
+                    return Self([sign; Self::TRIT_COUNT]);
+                }
+
+                Self(std::array::from_fn(|index| {
+                    let source = index + count;
+
+                    if source < Self::TRIT_COUNT {
+                        self.0[source]
+                    } else {
+                        sign
+                    }
                 }))
             }
 
-            /// Trit logical shift right by n positions, filling with zeros
+            /// Returns the logical right shift by `count` trits.
+            ///
+            /// Vacated most-significant trits are filled with zero.
+            /// If `count >= Self::TRIT_COUNT`, returns zero.
             #[must_use]
-            pub fn tlshr(&self, n: usize) -> Self {
-                Self(std::array::from_fn(|i| {
-                    if i + n < $width {
-                        self.0[i + n]
+            pub fn tlshr(&self, count: usize) -> Self {
+                if count >= Self::TRIT_COUNT {
+                    return Self::zero();
+                }
+
+                Self(std::array::from_fn(|index| {
+                    let source = index + count;
+
+                    if source < Self::TRIT_COUNT {
+                        self.0[source]
                     } else {
                         Trit::Z
                     }
@@ -183,7 +232,14 @@ macro_rules! impl_word_methods {
 
         impl Ord for $name {
             fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-                self.to_int().cmp(&other.to_int())
+                for index in (0..Self::TRIT_COUNT).rev() {
+                    match self.0[index].cmp(&other.0[index]) {
+                        std::cmp::Ordering::Equal => {}
+                        ordering => return ordering,
+                    }
+                }
+
+                std::cmp::Ordering::Equal
             }
         }
 
@@ -200,26 +256,32 @@ macro_rules! impl_word_methods {
     };
 }
 
-// <- Int integrations
-/// Trait used for int related conversions and logic. Used to define which int each word size needs.
-pub trait WordType: Sized {
-    /// The native integer type used to represent te specific word's value (e.g. i16 for Tryte)
-    type Int;
-    /// The minimum representable value for this word width, as a native integer.
-    const MIN_INT: Self::Int;
-    /// The maximum representable value for this word width, as a native integer.
-    const MAX_INT: Self::Int;
-    /// Converts this word to its native integer representation.
-    fn to_int(self) -> Self::Int;
-    /// Constructs a word from a native integer.
-    ///
-    /// # Errors
-    ///
-    /// Returns `Err` if `val` is outside the representable range for this word width,
-    /// i.e. outside `[Self::MIN_INT, Self::MAX_INT]`.
-    fn from_int(val: Self::Int) -> Result<Self, &'static str>;
+// <- Errors
+/// Errors returned by fixed-width ternary word operations.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum WordError {
+    /// A host integer cannot be represented by the requested word width.
+    OutOfRange,
 }
 
+impl fmt::Display for WordError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::OutOfRange => f.write_str("value is outside the representable range"),
+        }
+    }
+}
+
+impl std::error::Error for WordError {}
+
+// <- Definitions
+define_word! { Tryte(9) }
+
+define_word! { Word27(27) }
+
+define_word! { Word54(54) }
+
+// <- Int integrations
 /// Checked division that can fail on divide-by-zero or produce a wider `Output` when dividing across word widths.
 pub trait CheckedDiv<Rhs = Self> {
     /// The result type of the division — usually `Self`, but the wider type when dividing across widths.
@@ -228,72 +290,204 @@ pub trait CheckedDiv<Rhs = Self> {
     fn checked_div(self, rhs: Rhs) -> Option<Self::Output>;
 }
 
-macro_rules! impl_word_conversions {
-    ($name:ident, $width:literal, $int:ty) => {
-        impl WordType for $name {
-            type Int = $int;
+/// Logic used for int related conversions and logic. Used to define which int each word size needs.
+impl Tryte {
+    /// The minimum representable value for this word width, as a native integer.
+    pub const MIN_INT: i16 = -(3_i16.pow(9) - 1) / 2;
+    /// The maximum representable value for this word width, as a native integer.
+    pub const MAX_INT: i16 = (3_i16.pow(9) - 1) / 2;
 
-            const MAX_INT: $int = ((3 as $int).pow($width) - 1) / 2;
-            const MIN_INT: $int = -Self::MAX_INT;
+    /// Converts this word to its native integer representation.
+    pub fn to_int(self) -> i16 {
+        let mut val: i16 = 0;
+        let mut place: i16 = 1;
 
-            fn to_int(self) -> $int {
-                let mut val: $int = 0;
-                let mut place: $int = 1;
-                for t in self.0.iter() {
-                    val += t.value() as $int * place;
-                    place *= 3;
-                }
-                val
-            }
-
-            fn from_int(mut val: $int) -> Result<Self, &'static str> {
-                if !(Self::MIN_INT..=Self::MAX_INT).contains(&val) {
-                    return Err(concat!(stringify!($name), ": value out of range"));
-                }
-                let mut trits = [Trit::Z; $width];
-                for i in 0..$width {
-                    let rem = val.rem_euclid(3);
-                    trits[i] = if rem == 2 {
-                        val += 1;
-                        Trit::N
-                    } else if rem == 1 {
-                        Trit::P
-                    } else {
-                        Trit::Z
-                    };
-                    val = val.div_euclid(3);
-                }
-                Ok(Self(trits))
-            }
+        for t in &self.0 {
+            val += i16::from(t.value()) * place;
+            place *= 3;
         }
 
-        impl From<$name> for $int {
-            fn from(word: $name) -> $int {
-                word.to_int()
-            }
+        val
+    }
+
+    /// Constructs a word from a native integer.
+    ///
+    /// # Errors
+    ///
+    /// Returns `Err` if `val` is outside the representable range for this word width,
+    /// i.e. outside `[Self::MIN_INT, Self::MAX_INT]`.
+    pub fn from_int(mut val: i16) -> Result<Self, WordError> {
+        if !(Self::MIN_INT..=Self::MAX_INT).contains(&val) {
+            return Err(WordError::OutOfRange);
         }
 
-        impl TryFrom<$int> for $name {
-            type Error = &'static str;
-            fn try_from(val: $int) -> Result<Self, Self::Error> {
-                Self::from_int(val)
-            }
+        let mut trits = [Trit::Z; Self::TRIT_COUNT];
+
+        for trit in &mut trits {
+            let rem = val.rem_euclid(3);
+
+            *trit = if rem == 2 {
+                val += 1;
+                Trit::N
+            } else if rem == 1 {
+                Trit::P
+            } else {
+                Trit::Z
+            };
+
+            val = val.div_euclid(3);
         }
-    };
+
+        Ok(Self(trits))
+    }
 }
 
-// <- Definitions
-define_word! { Tryte(9) }
-impl_word_conversions!(Tryte, 9, i16);
+impl From<Tryte> for i16 {
+    fn from(word: Tryte) -> Self {
+        word.to_int()
+    }
+}
 
-define_word! { Word27(27) }
-impl_word_conversions!(Word27, 27, i64);
+impl TryFrom<i16> for Tryte {
+    type Error = WordError;
 
-define_word! { Word54(54) }
-impl_word_conversions!(Word54, 54, i128);
+    fn try_from(value: i16) -> Result<Self, Self::Error> {
+        Self::from_int(value)
+    }
+}
 
-// <- Arithmetic implementations
-macro_rules! impl_add_same_width {
+impl Word27 {
+    /// The minimum representable value for this word width, as a native integer.
+    pub const MIN_INT: i64 = -(3_i64.pow(27) - 1) / 2;
+    /// The maximum representable value for this word width, as a native integer.
+    pub const MAX_INT: i64 = (3_i64.pow(27) - 1) / 2;
+
+    /// Converts this word to its native integer representation.
+    pub fn to_int(self) -> i64 {
+        let mut val: i64 = 0;
+        let mut place: i64 = 1;
+
+        for t in &self.0 {
+            val += i64::from(t.value()) * place;
+            place *= 3;
+        }
+
+        val
+    }
+
+    /// Constructs a word from a native integer.
+    ///
+    /// # Errors
+    ///
+    /// Returns `Err` if `val` is outside the representable range for this word width,
+    /// i.e. outside `[Self::MIN_INT, Self::MAX_INT]`.
+    pub fn from_int(mut val: i64) -> Result<Self, WordError> {
+        if !(Self::MIN_INT..=Self::MAX_INT).contains(&val) {
+            return Err(WordError::OutOfRange);
+        }
+
+        let mut trits = [Trit::Z; Self::TRIT_COUNT];
+
+        for trit in &mut trits {
+            let rem = val.rem_euclid(3);
+
+            *trit = if rem == 2 {
+                val += 1;
+                Trit::N
+            } else if rem == 1 {
+                Trit::P
+            } else {
+                Trit::Z
+            };
+
+            val = val.div_euclid(3);
+        }
+
+        Ok(Self(trits))
+    }
+}
+
+impl From<Word27> for i64 {
+    fn from(word: Word27) -> Self {
+        word.to_int()
+    }
+}
+
+impl TryFrom<i64> for Word27 {
+    type Error = WordError;
+
+    fn try_from(value: i64) -> Result<Self, Self::Error> {
+        Self::from_int(value)
+    }
+}
+
+impl Word54 {
+    /// The minimum representable value for this word width, as a native integer.
+    pub const MIN_INT: i128 = -(3_i128.pow(54) - 1) / 2;
+    /// The maximum representable value for this word width, as a native integer.
+    pub const MAX_INT: i128 = (3_i128.pow(54) - 1) / 2;
+
+    /// Converts this word to its native integer representation.
+    pub fn to_int(self) -> i128 {
+        let mut val: i128 = 0;
+        let mut place: i128 = 1;
+
+        for t in &self.0 {
+            val += i128::from(t.value()) * place;
+            place *= 3;
+        }
+
+        val
+    }
+
+    /// Constructs a word from a native integer.
+    ///
+    /// # Errors
+    ///
+    /// Returns `Err` if `val` is outside the representable range for this word width,
+    /// i.e. outside `[Self::MIN_INT, Self::MAX_INT]`.
+    pub fn from_int(mut val: i128) -> Result<Self, WordError> {
+        if !(Self::MIN_INT..=Self::MAX_INT).contains(&val) {
+            return Err(WordError::OutOfRange);
+        }
+
+        let mut trits = [Trit::Z; Self::TRIT_COUNT];
+
+        for trit in &mut trits {
+            let rem = val.rem_euclid(3);
+
+            *trit = if rem == 2 {
+                val += 1;
+                Trit::N
+            } else if rem == 1 {
+                Trit::P
+            } else {
+                Trit::Z
+            };
+
+            val = val.div_euclid(3);
+        }
+
+        Ok(Self(trits))
+    }
+}
+
+impl From<Word54> for i128 {
+    fn from(word: Word54) -> Self {
+        word.to_int()
+    }
+}
+
+impl TryFrom<i128> for Word54 {
+    type Error = WordError;
+
+    fn try_from(value: i128) -> Result<Self, Self::Error> {
+        Self::from_int(value)
+    }
+}
+
+// <- Arithmetic implementations same width
+macro_rules! impl_arithmetic_same_width {
     ($T:ident) => {
         impl std::ops::Add for $T {
             type Output = $T;
@@ -301,30 +495,14 @@ macro_rules! impl_add_same_width {
                 $T(ripple_add(self.0, rhs.0))
             }
         }
-    };
-}
 
-impl_add_same_width!(Tryte);
-impl_add_same_width!(Word27);
-impl_add_same_width!(Word54);
-
-macro_rules! impl_sub_same_width {
-    ($T:ident) => {
         impl std::ops::Sub for $T {
             type Output = $T;
             fn sub(self, rhs: $T) -> $T {
                 self + (-rhs)
             }
         }
-    };
-}
 
-impl_sub_same_width!(Tryte);
-impl_sub_same_width!(Word27);
-impl_sub_same_width!(Word54);
-
-macro_rules! impl_mul_same_width {
-    ($T:ident) => {
         impl std::ops::Mul for $T {
             type Output = $T;
             fn mul(self, rhs: $T) -> $T {
@@ -340,16 +518,7 @@ macro_rules! impl_mul_same_width {
                 product
             }
         }
-    };
-}
 
-impl_mul_same_width!(Tryte);
-impl_mul_same_width!(Word27);
-impl_mul_same_width!(Word54);
-
-/// Does division with safety around zero
-macro_rules! impl_checked_div_same_width {
-    ($T:ident) => {
         impl CheckedDiv for $T {
             type Output = $T;
             fn checked_div(self, rhs: Self) -> Option<$T> {
@@ -359,32 +528,24 @@ macro_rules! impl_checked_div_same_width {
                 Self::from_int(self.to_int() / rhs.to_int()).ok()
             }
         }
-    };
-}
 
-impl_checked_div_same_width!(Tryte);
-impl_checked_div_same_width!(Word27);
-impl_checked_div_same_width!(Word54);
-
-/// Division with panic on zero, same as rust's standard integers
-macro_rules! impl_div_same_width {
-    ($T:ident) => {
         impl std::ops::Div for $T {
             type Output = $T;
             fn div(self, rhs: $T) -> $T {
                 self.checked_div(rhs)
-                    .unwrap_or_else(|| panic!("{}: division by zero or overflow", stringify!($T)))
+                    .unwrap_or_else(|| panic!("{}: division by zero", stringify!($T)))
             }
         }
     };
 }
 
-impl_div_same_width!(Tryte);
-impl_div_same_width!(Word27);
-impl_div_same_width!(Word54);
+impl_arithmetic_same_width!(Tryte);
+impl_arithmetic_same_width!(Word27);
+impl_arithmetic_same_width!(Word54);
 
-macro_rules! impl_add_cross_width {
+macro_rules! impl_arithmetic_cross_width {
     ($Narrow:ident, $NarrowW:literal, $Wide:ident, $WideW:literal) => {
+        // Addition
         impl std::ops::Add<$Wide> for $Narrow {
             type Output = $Wide;
             fn add(self, rhs: $Wide) -> $Wide {
@@ -398,16 +559,8 @@ macro_rules! impl_add_cross_width {
                 self + $Wide(widen::<$NarrowW, $WideW>(rhs.0))
             }
         }
-    };
-}
 
-impl_add_cross_width!(Tryte, 9, Word27, 27);
-impl_add_cross_width!(Tryte, 9, Word54, 54);
-impl_add_cross_width!(Word27, 27, Word54, 54);
-
-macro_rules! impl_sub_cross_width {
-    ($Narrow:ident, $NarrowW:literal, $Wide:ident, $WideW:literal) => {
-        /// Widens the narrower operand before subtracting; result is always the wider type.
+        // Subtraction
         impl std::ops::Sub<$Wide> for $Narrow {
             type Output = $Wide;
             fn sub(self, rhs: $Wide) -> $Wide {
@@ -415,22 +568,14 @@ macro_rules! impl_sub_cross_width {
             }
         }
 
-        /// Widens the narrower operand before subtracting; result is always the wider type.
         impl std::ops::Sub<$Narrow> for $Wide {
             type Output = $Wide;
             fn sub(self, rhs: $Narrow) -> $Wide {
                 self - $Wide(widen::<$NarrowW, $WideW>(rhs.0))
             }
         }
-    };
-}
 
-impl_sub_cross_width!(Tryte, 9, Word27, 27);
-impl_sub_cross_width!(Tryte, 9, Word54, 54);
-impl_sub_cross_width!(Word27, 27, Word54, 54);
-
-macro_rules! impl_mul_cross_width {
-    ($Narrow:ident, $NarrowW:literal, $Wide:ident, $WideW:literal) => {
+        // Multiplication
         impl std::ops::Mul<$Wide> for $Narrow {
             type Output = $Wide;
             fn mul(self, rhs: $Wide) -> $Wide {
@@ -444,16 +589,8 @@ macro_rules! impl_mul_cross_width {
                 self * $Wide(widen::<$NarrowW, $WideW>(rhs.0))
             }
         }
-    };
-}
 
-impl_mul_cross_width!(Tryte, 9, Word27, 27);
-impl_mul_cross_width!(Tryte, 9, Word54, 54);
-impl_mul_cross_width!(Word27, 27, Word54, 54);
-
-// Checked division implemented separately, most applicable for vildrose-VM
-macro_rules! impl_checked_div_cross_width {
-    ($Narrow:ident, $NarrowW:literal, $Wide:ident, $WideW:literal) => {
+        // Checked division implemented separately, most applicable for vildrose-VM
         impl CheckedDiv<$Wide> for $Narrow {
             type Output = $Wide;
             fn checked_div(self, rhs: $Wide) -> Option<$Wide> {
@@ -467,15 +604,8 @@ macro_rules! impl_checked_div_cross_width {
                 self.checked_div($Wide(widen::<$NarrowW, $WideW>(rhs.0)))
             }
         }
-    };
-}
 
-impl_checked_div_cross_width!(Tryte, 9, Word27, 27);
-impl_checked_div_cross_width!(Tryte, 9, Word54, 54);
-impl_checked_div_cross_width!(Word27, 27, Word54, 54);
-
-macro_rules! impl_div_cross_width {
-    ($Narrow:ident, $NarrowW:literal, $Wide:ident, $WideW:literal) => {
+        // Division
         impl std::ops::Div<$Wide> for $Narrow {
             type Output = $Wide;
             fn div(self, rhs: $Wide) -> $Wide {
@@ -492,9 +622,9 @@ macro_rules! impl_div_cross_width {
     };
 }
 
-impl_div_cross_width!(Tryte, 9, Word27, 27);
-impl_div_cross_width!(Tryte, 9, Word54, 54);
-impl_div_cross_width!(Word27, 27, Word54, 54);
+impl_arithmetic_cross_width!(Tryte, 9, Word27, 27);
+impl_arithmetic_cross_width!(Tryte, 9, Word54, 54);
+impl_arithmetic_cross_width!(Word27, 27, Word54, 54);
 
 /// Word9 definition, it's just an alias for Tryte
 pub type Word9 = Tryte;

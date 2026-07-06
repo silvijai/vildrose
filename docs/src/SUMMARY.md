@@ -20,7 +20,7 @@
 - [Overview](architecture/readme.md)
   - [Word Sizes](architecture/word-sizes.md)
   - [Register File](architecture/register-file.md)
-  - [ISA](architecture/isa.md)
+  - [ISAs](architecture/isa.md)
   - [Memory Map](architecture/memory-map.md)
 
 # Guides

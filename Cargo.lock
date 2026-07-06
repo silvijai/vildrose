@@ -101,6 +101,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "hyldeblomst"
+version = "0.1.0"
+dependencies = [
+ "insta",
+ "proptest",
+ "vildrose-core",
+ "vildrose-isa",
+]
+
+[[package]]
 name = "insta"
 version = "1.48.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -371,6 +381,13 @@ version = "0.1.0"
 dependencies = [
  "insta",
  "proptest",
+]
+
+[[package]]
+name = "vildrose-isa"
+version = "0.1.0"
+dependencies = [
+ "vildrose-core",
 ]
 
 [[package]]

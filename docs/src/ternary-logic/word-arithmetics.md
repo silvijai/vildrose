@@ -53,7 +53,7 @@ Hexadecimal counting {
 }
 ```
 
-Here *i* for binary can only be 0 or 1. And for hexadecimal i has to be between 0 and F (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, A (10), B (11), C (12), D (13), E (14), F (15)).
+Here *i* for binary can only be 0 or 1. And for hexadecimal *i* has to be between 0 and F (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, A (10), B (11), C (12), D (13), E (14), F (15)).
 
 With this you might see the pattern. The expression for counting can be expressed as such:
 
@@ -74,7 +74,7 @@ Ternary counting {
 }
 ```
 
-In ternary, i can either be represented by 0, 1 or 2 for unbalanced ternary, or by using -1, 0 or 1 for balanced ternary (though I will use N, Z or P, since it better aligns to the code). Because of the benefits to arithmetics of balanced ternary, that is gonna be used for the examples here. Unbalanced ternary might not even be implemented, and instead only managed by software layers later on.
+In ternary, *i* can either be represented by 0, 1 or 2 for unbalanced ternary, or by using -1, 0 or 1 for balanced ternary (though I will use N, Z or P, since it better aligns to the code). Because of the benefits to arithmetics of balanced ternary, that is gonna be used for the examples here. Unbalanced ternary might not even be implemented, and instead only managed by software layers later on.
 
 So let's go through some examples of numbers in each of these base systems:
 | Decimal | Binary | Hexadecimal | Balanced Ternary | Unbalanced Ternary |
@@ -88,7 +88,7 @@ So let's go through some examples of numbers in each of these base systems:
 | 13      | 1101   | D           | PPP              | 111                |
 | 25      | 11001  | 19          | PZNP             | 221                |
 
-At this point another pattern might appear, the smaller the base, the more numbers are digits are needed to represent a number. Yet we still don't use hexadecimal in hardware, both because of complexity, but also because of [radix efficiency](word-radix.md).
+At this point another pattern might appear, the smaller the base, the more digits are needed to represent a number. Yet we still don't use hexadecimal in hardware, both because of complexity, but also because of [radix efficiency](word-radix.md).
 
 But this leads to another question, what about negative numbers? In these cases, we use a "-" in front of the number, but this data also needs to be stored. Generally, it can be assumed, that if there is a chance for the type to be negative (e.g. it is balanced) we must have a separate piece of information to signal whether it is positive or negative. This is generally true for all types, except for Balanced Ternary.
 

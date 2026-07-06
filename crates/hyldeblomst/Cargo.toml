@@ -1,6 +1,6 @@
 [package]
-name = "vildrose-vm"
-description = "VM - Not yet implemented"
+name = "hyldeblomst"
+description = "Vildrose-VM - Not yet implemented"
 
 version.workspace = true
 edition.workspace = true
@@ -16,7 +16,8 @@ categories.workspace = true
 # Consider having some in the future
 
 [dependencies]
-
+vildrose-core = { workspace = true }
+vildrose-isa = { workspace = true }
 
 [dev-dependencies]
 proptest = { workspace = true }

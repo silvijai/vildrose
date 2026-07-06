@@ -1,4 +1,4 @@
-use vildrose_core::word::{Tryte, Word27, WordType};
+use vildrose_core::word::{Tryte, Word27};
 
 const SAMPLE_VALUES: [i16; 7] = [-9841, -100, -1, 0, 1, 100, 9841];
 

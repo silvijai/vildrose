@@ -1,4 +1,4 @@
-use vildrose_core::word::{CheckedDiv, Tryte, Word27, Word54, WordType};
+use vildrose_core::word::{CheckedDiv, Tryte, Word27, Word54};
 
 #[test]
 fn tryte_div_exact() {
@@ -29,7 +29,7 @@ fn tryte_div_negative_divisor() {
 }
 
 #[test]
-#[should_panic(expected = "division by zero or overflow")]
+#[should_panic(expected = "division by zero")]
 fn tryte_div_by_zero_panics() {
     let a = Tryte::from_int(5).unwrap();
     let _ = a / Tryte::zero();

@@ -1,7 +1,11 @@
 # ISA
 
-The ISA is fixed-format and RISC-like, but includes ternary-native instructions.
+I have foregone the idea of making my own ISA, as I am not nearly experienced enough to make decisions about such things, instead I will be building my VM on the idea of supporting a couple different ISAs. Some for ternary, some for binary, the idea with this is especially in regards to how logic can be shared or split between both types.
 
-A lot of decisions still need to be made around how the ISA is implemented, to keep it inline with how a proper RISC-V ternary implementation would look. For this part, I'll need to read into how RV32IM (the M just signifies multiplication and division) is set up, likely as part of my attempt to integrate a binary core into here as well.
+Ternary ISAs:
+- [Setnex](https://codeberg.org/setnex-org/setnex-isa)
+- [REBEL-6](https://github.com/aiunderstand/ternary-workbench/blob/master/docs/rebel6-isa.md)
+- 5500FP
 
-A couple instructions that would be unique to a ternary system would be a TSIGN instruction, TCON for consensus and some 3 way branches.
+Binary ISAs:
+- [RISC-V](https://github.com/riscv/riscv-isa-manual)

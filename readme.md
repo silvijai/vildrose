@@ -1,8 +1,37 @@
 # vildrose
 
-A balanced ternary system *(inspired by the setun project)* attempting to implement a logic and type system *(vildrose-core)*, python bindings *(Snerle)*, a VM *(Hyldeblomst)*, ISA instructions *(Mirabelle)*, an assembler *(Nemunas)*, a debugger *(Anemone)*, a native binary execution *(vildrose-rv32i)* and an MMIO device integration.
+An umbrella project referring to a couple main systems:
 
-The project also envisions the ability to run a VM with a hybrid CPU, with both ternary and binary based cores. A big part in wanting to do this, is with hopes of progressing research, especially as it pertains to ternary instruction sets and logic in coding.
+- Vildrose-core
+
+A rust based base implementation of ternary logic and types.
+
+- Snerle
+
+bindings for vildrose-core for use in python, C#, C and Zig.
+
+- Hyldeblomst
+
+VM for running ternary and binary ISAs together in an attempt to optimize algorithms and software for ternary and hybrid compute platforms.
+
+- Anemone
+
+A GUI and CLI debugger for Hyldeblomst and Vildlang.
+
+- Vildlang (working title)
+  - LSP
+  - Fuzzer
+  - PKG and build pipeline
+
+Programming language for writing code between binary and ternary. It's main goal is to obfuscate the difference between bits, trits, word sizes and logic, so that that code written targeting both platforms, could be run on both.
+
+Might also become an umbrella term for vildcode, and any language that can translate and to vildcode, and use vildrose bindings. Like a libadalang setup.
+
+- Nemunas
+
+Assembler, lexer, parser and general pipeline for building, producing vildcode (intermediate language code) and interfacing with platform compilation.
+
+Expected pipeline is to build vildcode IL, and then have each platform implement a simple build pipeline, where the vildcode gets translated to native instructions. A path for precompiling for platforms will also be envisioned.
 
 ## Why?
 
@@ -15,27 +44,38 @@ There are two implementations of docs, one that is [books](https://silvijai.gith
 ## Roadmap
 
 - [ ] Phase 1: Foundation
-  - [ ] Core arithmetic, type and logic implementation
-  - [ ] Python bindings (Likely to be pushed back)
-- [ ] Phase 2: VM + ISA
-  - [ ] Implement minimal ISA
-  - [ ] Registers, memory and CPU for VM
-  - [ ] Basic execution of hand written instructions
-- [ ] Phase 3: Assembler
-  - [ ] Lexer
-  - [ ] Parser
-  - [ ] Debugger
-- [ ] Phase 4: MMIO devices
+  - [X] Core: arithmetic, type and logic implementation
+  - [X] Core: Test suite
+  - [ ] Core: API and bindings
+
+- [ ] Phase 2a: VM and ISA
+  - [ ] integrate Setnex ISA
+    - [ ] 5500FP ISA
+    - [ ] REBEL-6 ISA
+  - [ ] Build VM pipeline
+  - [ ] Expose connections for anemone
+
+// Still unsure whether vildlang will come now, or I will be using libadalang for a start
+- [ ] Phase 2b: Vildlang and Nemunas
+  - [ ] Define Vildlang syntax and files
+  - [ ] Lexer + Parser
+  - [ ] LSP
+  - [ ] Nemunas: Vildcode definitions
+  - [ ] Vildlang to vildcode translation
+  - [ ] Vildcode to platform ASM conversion
+    - [ ] JIT
+
+- [ ] Phase 3: Implementation groundwork
+  - [ ] Linux ABI
+  - [ ] Vildlang as a path for translating binary compiled applications to ternary logic (Similar to box64 / wine (Might end up being a separate project))
   - [ ] Binary device compatibility
   - [ ] UART
   - [ ] Framebuffer / Display
-- [ ] Phase 5: Binary compatibility
-  - [ ] RV32I decoder
-  - [ ] RV32I executer
-  - [ ] ELF loader
-  - [ ] Linux syscall forwarding
-- [ ] Phase 6: 54 trit extension and RV64I compatibility
-- [ ] Phase 7: To be determined
-  - [ ] Full system emulation
-  - [ ] FPGA soft core synthesis
-  - [ ] Ternary native OS
+  - [ ] USB, WiFi, Bluetooth etc.
+
+- [ ] Phase 4: Beyond
+  - [ ] Full linux support
+  - [ ] Hybrid CPU stability
+  - [ ] Hybrid GPU implementation
+  - [ ] FPGA Soft core
+  - [ ] Experimenting with ternary native hardware development

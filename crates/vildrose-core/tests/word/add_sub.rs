@@ -1,6 +1,6 @@
 use crate::common::{tryte_p0, word27_p1, word54_p2};
 use vildrose_core::trit::Trit;
-use vildrose_core::word::{Tryte, Word27, Word54, WordType};
+use vildrose_core::word::{Tryte, Word27, Word54};
 
 #[test]
 fn tryte_negate() {

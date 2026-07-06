@@ -1,4 +1,4 @@
-use vildrose_core::word::{Tryte, Word27, Word54, WordType};
+use vildrose_core::word::{Tryte, Word27, Word54};
 
 #[test]
 fn tryte_roundtrip_positive_and_negative() {
@@ -56,7 +56,7 @@ fn word54_from_int_rejects_out_of_range() {
 #[test]
 fn from_trait_matches_to_int() {
     let t = Tryte::from_int(42).unwrap();
-    let val: i16 = t.into();
+    let val: i16 = t.to_int();
     assert_eq!(val, t.to_int());
     assert_eq!(i16::from(t), t.to_int());
 }
