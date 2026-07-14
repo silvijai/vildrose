@@ -1,2 +1,2 @@
-createSrcSidebar('[["vildrose_core",["",[],["kleene.rs","lib.rs","ops.rs","trit.rs","word.rs"]]]]');
-//{"start":19,"fragment_lengths":[77]}
+createSrcSidebar('[["hyldeblomst",["",[["setnex",[],["mod.rs","registers.rs"]]],["lib.rs","registers.rs"]]],["vildrose_core",["",[["word",[],["arithmetic.rs","basic.rs","conversion.rs","cross_width.rs","logic.rs","mod.rs"]]],["kleene.rs","lib.rs","ops.rs","trit.rs"]]],["vildrose_isa",["",[["setnex",[],["mod.rs","registers.rs"]]],["lib.rs"]]]]');
+//{"start":19,"fragment_lengths":[88,161,75]}

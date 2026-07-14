@@ -16,8 +16,8 @@
         <link rel="icon" href="favicon-de23e50b.svg">
         <link rel="shortcut icon" href="favicon-8114d1fc.png">
         <link rel="stylesheet" href="css/variables-8adf115d.css">
-        <link rel="stylesheet" href="css/general-0392ca55.css">
-        <link rel="stylesheet" href="css/chrome-fc474251.css">
+        <link rel="stylesheet" href="css/general-e96d0476.css">
+        <link rel="stylesheet" href="css/chrome-d279d366.css">
         <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
 
         <!-- Fonts -->
@@ -36,10 +36,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "ayu";
-            window.path_to_searchindex_js = "searchindex-54cbb634.js";
+            window.path_to_searchindex_js = "searchindex-65c1076a.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-a778a8aa.js"></script>
+        <script src="toc-01d7fc3f.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -179,8 +179,23 @@
                 <div id="mdbook-content" class="content">
                     <main>
                         <h1 id="introduction"><a class="header" href="#introduction">Introduction</a></h1>
-<p>Hi, welcome to the docs, these are not the rust API docs, those can instead be found <a href="https://silvijai.github.io/vildrose/api/">here</a>. These docs are for explaining the system structure, the goals, the logic, the choices made and so on.</p>
-<p>As mentioned in the contributing.md file as well, feel free to reach out in cases of wanting to contribute, being curious about the project, having issues or otherwise. More things about the project repo and such will also be added here later.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="project-specifics"><a class="header" href="#project-specifics">Project Specifics</a></h1>
+<h2 id="project-phases"><a class="header" href="#project-phases">Project phases</a></h2>
+<h3 id="phase-1-seed--germination"><a class="header" href="#phase-1-seed--germination">Phase 1: Seed / germination</a></h3>
+<p>..</p>
+<h3 id="phase-2-seedling"><a class="header" href="#phase-2-seedling">Phase 2: Seedling</a></h3>
+<p>..</p>
+<h3 id="phase-3-vegetative-growth"><a class="header" href="#phase-3-vegetative-growth">Phase 3: Vegetative growth</a></h3>
+<p>..</p>
+<h3 id="phase-4-budding-alpha"><a class="header" href="#phase-4-budding-alpha">Phase 4: Budding (Alpha)</a></h3>
+<p>..</p>
+<h3 id="phase-5-flowering-beta"><a class="header" href="#phase-5-flowering-beta">Phase 5: Flowering (Beta)</a></h3>
+<p>..</p>
+<h3 id="phase-6-fruiting-stable"><a class="header" href="#phase-6-fruiting-stable">Phase 6: Fruiting (Stable)</a></h3>
+<p>..</p>
+<h3 id="phase-7-dormancy-long-term-support"><a class="header" href="#phase-7-dormancy-long-term-support">Phase 7: Dormancy (Long term support)</a></h3>
+<p>..</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="ternary-primer"><a class="header" href="#ternary-primer">Ternary Primer</a></h1>
 <p>Balanced ternary uses three digit values:</p>
@@ -209,12 +224,14 @@
 <h2 id="words"><a class="header" href="#words">Words</a></h2>
 <p>A Word refers to the collection of bits / trits in an array like manner. A Byte is a form of Word, specifically a binary Word of 8 bits. With this, an int8 can also be described as a binary Word8. However, when we use Word in this project, it refers to a ternary Word of trits that are devisable by 3. The main forms are:</p>
 <ul>
+<li>Tribble (similar to a nibble, neither are really considered as direct types though)</li>
 <li>Word9 (also called Tryte, similar to a Byte / i8)</li>
 <li>Word27 (similar to i32)</li>
 <li>Word54 (similar to i64)</li>
 <li>Word108 (similar to i128)</li>
 </ul>
 <p>Words will be used in a similar way as ints in this project, and Tryte specifically, will be the ternary answer to Bytes.</p>
+<!-- TODO: Rewrite this comparison, it could be better -->
 <p>With this defined, we can define a system architecture like we’re used to with Binary. My computer for example has a 64-bit CPU and 16 gigabytes of RAM. A ternary computer in a similar range would have a 54-trit CPU and 18 gigatrytes of RAM. (note that I don’t know if I did the conversion that well, and that ternary memory would hold more storage due to having one more state for using trits over bits, and a tryte having one more trit, than bytes have bits)</p>
 <p>Ternary Words also have a couple of interesting benefits, my favorite relating to it’s signed nature by default. How do you know whether a ternary Word is positive or negative? Look through it’s trits, the first non zero trit from left to right will correspond to it’s sign, and if it’s 0, then that perfectly fits with the 0 value of a trit as well. Want to flip the sign of a Word? Easy, just flip the sign of each trit in the word. Want the absolute value of the Word? Just flip all the negative trits. Also the fact that it’s max and min value are the same, just with one positive, the other negative is also deliciously simple.</p>
 <p>If you find this type of manipulation of Words as interesting as I do, then I can strongly recommend playing with a <a href="https://countingmethods.com/balanced-ternary-converter-tool/">balanced ternary calculator</a>.</p>
@@ -226,22 +243,6 @@
 <p>I think ternary systems will have similar adoption struggles as RISC-V and ARM. By now ARM and AARCH is really well adopted. Devices running it are quite efficient, run well and often give a better experience for the user. For the longest time it was relegated to mobile devices, but since then, they’ve gathered a major foothold in the laptop and server markets as well. RISC-V is still in the early phases in adoption, it has some hardware boards, and software support is growing, but it’s still far from a practical day to day platform.</p>
 <p>So what is my point with this? I think ternary will be a slow process to get into being a product people will want to use, BUT, I don’t think it’s impossible. My personal belief is that ternary will be like ARM, at first a bit of a niche with some proven benefits, but until it can stand toe to toe with it’s competitors like x86, it might as well just be a research technology. I think (and hope) that ternary will be proven and grow through smaller efforts, both in research, and specific cases like AI and efficiency. In my ideal world, it would take a while, but it would become more and more proven year by year, until before you know it, it actually has planted itself into certain workflows and positions solidly.</p>
 <p>TL;DR: Ternary is really cool and interesting</p>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="project-phases"><a class="header" href="#project-phases">Project phases</a></h1>
-<h2 id="phase-1-seed--germination"><a class="header" href="#phase-1-seed--germination">Phase 1: Seed / germination</a></h2>
-<p>..</p>
-<h2 id="phase-2-seedling"><a class="header" href="#phase-2-seedling">Phase 2: Seedling</a></h2>
-<p>..</p>
-<h2 id="phase-3-vegetative-growth"><a class="header" href="#phase-3-vegetative-growth">Phase 3: Vegetative growth</a></h2>
-<p>..</p>
-<h2 id="phase-4-budding-alpha"><a class="header" href="#phase-4-budding-alpha">Phase 4: Budding (Alpha)</a></h2>
-<p>..</p>
-<h2 id="phase-5-flowering-beta"><a class="header" href="#phase-5-flowering-beta">Phase 5: Flowering (Beta)</a></h2>
-<p>..</p>
-<h2 id="phase-6-fruiting-stable"><a class="header" href="#phase-6-fruiting-stable">Phase 6: Fruiting (Stable)</a></h2>
-<p>..</p>
-<h2 id="phase-7-dormancy-long-term-maintenance"><a class="header" href="#phase-7-dormancy-long-term-maintenance">Phase 7: Dormancy (Long term maintenance)</a></h2>
-<p>..</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="ternary-overview"><a class="header" href="#ternary-overview">Ternary overview</a></h1>
 <div style="break-before: page; page-break-before: always;"></div>
@@ -261,7 +262,7 @@ Balanced ternary:
  T  0  1
  N  Z  P
 </code></pre>
-<p>For this project I will only use balanced ternary, this has been chosen for multiple reasons like it’s efficiency for signed Words, which also ties into <a href="#arithmetics">Word arithmetics</a>, and also for it fitting well with boolean logic, 0 still maps to False, 1 to True and we can keep -1 as a separate unknown / undefined state.</p>
+<p>For this project I will only use balanced ternary, this has been chosen for multiple reasons like it’s efficiency for signed Words, which also ties into <a href="word-arithmetics.html">Word arithmetics</a>, and also for it fitting well with boolean logic, 0 still maps to False, 1 to True and we can keep -1 as a separate unknown / undefined state.</p>
 <p>I personally like to use -1, 0 and 1 for more human readable and mathematical definitions, but I also use N, Z and P when it comes to representations of trits or Words in computing systems. Like for a representation of Word in a terminal, I would use NZP notation, while I’d use -1, 0 and 1 when describing it to a person or working with it more verbally.</p>
 <p>So now, we have our definition for trits, also compared to bits:</p>
 <pre><!--?xml version="1.0" encoding="utf-8"?--><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" data-d2-version="v0.7.1" preserveaspectratio="xMinYMin meet" viewbox="0 0 896 368"><svg class="d2-234921715 d2-svg" width="896" height="368" viewbox="-91 -121 896 368"><rect x="-91.000000" y="-121.000000" width="896.000000" height="368.000000" rx="0.000000" fill="#FFFFFF" class=" fill-N7" stroke-width="0" /><style type="text/css"><![CDATA[
@@ -371,14 +372,15 @@ Balanced ternary:
 <blockquote>
 <p>So why even look into trits as an alternative to bits? If computing has gone well without ternary for so long, then there must be no reason to look into it. Right?</p>
 </blockquote>
-<p>I can understand that sentiment, but I really don’t think it has to be so black and white. Yes, we have a lot of history and prior knowledge about binary in so many facets. Yet, there is still many cases looking into trits and ternary logic really makes sense. My personal favorites are in terms of <a href="#logic-gates">ternary logic</a>, <a href="#arithmetics">Word arithmetics</a> and <a href="#radix-efficiency">radix efficiency</a>.</p>
+<!-- TODO: Fix redirects, when they're described elsewhere -->
+<p>I can understand that sentiment, but I really don’t think it has to be so black and white. Yes, we have a lot of history and prior knowledge about binary in so many facets. Yet, there is still many cases looking into trits and ternary logic really makes sense. My personal favorites are in terms of <a href="#logic-gates">ternary logic</a>, <a href="word-arithmetics.html">Word arithmetics</a> and <a href="word-radix.html">radix efficiency</a>.</p>
 <p>There is also an argument that ternary could unlock the ability to get more performance in a post moore’s law computing world<sup class="footnote-reference" id="fr-1-1"><a href="#footnote-1">1</a></sup>.</p>
 <h3 id="how-does-the-computer-hold-states"><a class="header" href="#how-does-the-computer-hold-states">How does the computer hold states?</a></h3>
 <p>The way a computer reads a 0 or a 1, is based on the voltage (V) that is delivered to the processor. For most common processors and logic gates, 0 will be 0V and 1 will be between 1V and 1,5V. You might be used to 1 being 5V for IC logic gates, but this is not standard for modern CPUs. For ternary, multiple voltage values have been suggested, Huaweis chip for for example uses CNTFETs, compared to CMOS, the standard of binary, and it uses 0V for 0, 1,65V for +1 and 3,3V for -1<sup class="footnote-reference" id="fr-2-1"><a href="#footnote-2">2</a></sup>. I will hopefully have more to say on this topic <a href="#logic-gates">ternary-logic</a>.</p>
 <blockquote>
 <p>Why go from 2 to 3 states? Wouldn’t it be more effective to go up to 8 or 16, or even 1024 states? That would make it much easier to address a lot of things.</p>
 </blockquote>
-<p>The answer to this comes down to multiple things, like electrical complexity (specifically about voltage stability and thresholds for CMOS<sup class="footnote-reference" id="fr-3-1"><a href="#footnote-3">3</a></sup>), <a href="#radix-efficiency">radix efficiency</a> and wasted space. For a multitude of reasons, we’d prefer to keep it to fewer states, while optimizing for data it can represent.</p>
+<p>The answer to this comes down to multiple things, like electrical complexity (specifically about voltage stability and thresholds for CMOS<sup class="footnote-reference" id="fr-3-1"><a href="#footnote-3">3</a></sup>), <a href="word-radix.html">radix efficiency</a> and wasted space. For a multitude of reasons, we’d prefer to keep it to fewer states, while optimizing for data it can represent.</p>
 <hr>
 <ol class="footnote-definition">
 <li id="footnote-1">
@@ -400,13 +402,9 @@ Balanced ternary:
 <p>https://link.springer.com/chapter/10.1007/978-981-16-1052-3_9</p>
 <p>www.nature.com/articles/s41467-025-62116-y</p>
 <div style="break-before: page; page-break-before: always;"></div>
-<h1 id="kleenes-1"><a class="header" href="#kleenes-1">Kleenes</a></h1>
+<h1 id="functions-and-logic"><a class="header" href="#functions-and-logic">Functions and logic</a></h1>
 <div style="break-before: page; page-break-before: always;"></div>
-<h1 id="current-uses"><a class="header" href="#current-uses">Current uses</a></h1>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="words-1"><a class="header" href="#words-1">Words</a></h1>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="arithmetics"><a class="header" href="#arithmetics">Arithmetics</a></h1>
+<h1 id="word-arithmetics"><a class="header" href="#word-arithmetics">Word arithmetics</a></h1>
 <p>For a start before going into specific cases of how arithmetics are performed on words in vildrose-cores code, I would like to make sure there’s a blanket understanding for binary and ternary arithmetics and how it relates to the decimal (base 10) we’re used to.</p>
 <p>As an absolute baseline, it is important to understand what a base is, for this, we will start with an example in decimal. When counting in decimal, we go from 0 to 9, and once we reach 9, we loop over to 10. We can explain this as the one being in the 10s place. One way to understand this, is by representing it like this:</p>
 <pre><!--?xml version="1.0" encoding="utf-8"?--><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" data-d2-version="v0.7.1" preserveaspectratio="xMinYMin meet" viewbox="0 0 587 314"><svg class="d2-3083876374 d2-svg" width="587" height="314" viewbox="-101 -101 587 314"><rect x="-101.000000" y="-101.000000" width="587.000000" height="314.000000" rx="0.000000" fill="#FFFFFF" class=" fill-N7" stroke-width="0" /><style type="text/css"><![CDATA[
@@ -621,7 +619,7 @@ Balanced ternary:
 </mask></svg></svg>
 </pre>
 
-<p>Here <em>i</em> for binary can only be 0 or 1. And for hexadecimal i has to be between 0 and F (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, A (10), B (11), C (12), D (13), E (14), F (15)).</p>
+<p>Here <em>i</em> for binary can only be 0 or 1. And for hexadecimal <em>i</em> has to be between 0 and F (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, A (10), B (11), C (12), D (13), E (14), F (15)).</p>
 <p>With this you might see the pattern. The expression for counting can be expressed as such:</p>
 <p>i * base^n = result</p>
 <p>So for ternary, we can set up the same type of diagram as for binary:</p>
@@ -729,7 +727,7 @@ Balanced ternary:
 </mask></svg></svg>
 </pre>
 
-<p>In ternary, i can either be represented by 0, 1 or 2 for unbalanced ternary, or by using -1, 0 or 1 for balanced ternary (though I will use N, Z or P, since it better aligns to the code). Because of the benefits to arithmetics of balanced ternary, that is gonna be used for the examples here. Unbalanced ternary might not even be implemented, and instead only managed by software layers later on.</p>
+<p>In ternary, <em>i</em> can either be represented by 0, 1 or 2 for unbalanced ternary, or by using -1, 0 or 1 for balanced ternary (though I will use N, Z or P, since it better aligns to the code). Because of the benefits to arithmetics of balanced ternary, that is gonna be used for the examples here. Unbalanced ternary might not even be implemented, and instead only managed by software layers later on.</p>
 <p>So let’s go through some examples of numbers in each of these base systems:</p>
 <div class="table-wrapper">
 <table>
@@ -748,7 +746,7 @@ Balanced ternary:
 </tbody>
 </table>
 </div>
-<p>At this point another pattern might appear, the smaller the base, the more numbers are digits are needed to represent a number. Yet we still don’t use hexadecimal in hardware, both because of complexity, but also because of <a href="#radix-efficiency">radix efficiency</a>.</p>
+<p>At this point another pattern might appear, the smaller the base, the more digits are needed to represent a number. Yet we still don’t use hexadecimal in hardware, both because of complexity, but also because of <a href="vildrose-core/word-radix.html">radix efficiency</a>.</p>
 <p>But this leads to another question, what about negative numbers? In these cases, we use a “-” in front of the number, but this data also needs to be stored. Generally, it can be assumed, that if there is a chance for the type to be negative (e.g. it is balanced) we must have a separate piece of information to signal whether it is positive or negative. This is generally true for all types, except for Balanced Ternary.</p>
 <p>Let’s go through a quick example for balanced ternary, let’s start by writing the number 33 and splitting it off into it’s separate parts:</p>
 <pre><code class="language-text">33 = P (1 * 3^3 = 27) P (1 * 3^2 = 9) N (-1 * 3^1 = -3) Z (0 * 3^0 = 0)
@@ -807,6 +805,7 @@ pub fn abs(&amp;self) -&gt; Self {
         *self
     }
 }</code></pre>
+<!-- TODO: Write these, once their logic is more solidified and maybe written in ternary logic in core -->
 <h2 id="addition"><a class="header" href="#addition">Addition</a></h2>
 <h2 id="subtraction"><a class="header" href="#subtraction">Subtraction</a></h2>
 <h2 id="multiplication"><a class="header" href="#multiplication">Multiplication</a></h2>
@@ -823,30 +822,10 @@ pub fn abs(&amp;self) -&gt; Self {
 </li>
 </ol>
 <div style="break-before: page; page-break-before: always;"></div>
-<h1 id="radix-efficiency"><a class="header" href="#radix-efficiency">Radix efficiency</a></h1>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="architecture-overview"><a class="header" href="#architecture-overview">Architecture Overview</a></h1>
-<p>The main things on the horizon for the CPU architecture are the ISA (both a ternary native one, and a hybrid one for controlling a ternary core and a binary code based on RV32I), memory, registers and words as native sizing.</p>
-<p>In general a lot of thoughts have been made in regards to how the CPU should be handled. Should it only have ternary cores? If it is a hybrid system, how do they communicate? Can they perform each others tasks, when they themselves aren’t otherwise in use? A lot of this is what the project aims to answer, and later likely tie it into a research project.</p>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="word-sizes"><a class="header" href="#word-sizes">Word Sizes</a></h1>
-<p>The project starts from Trit, and build upon it with other types.</p>
-<p>Planned sizes include Word9 (also referred to as tryte sometimes), and Word27 (and later on, Word54 and maybe Word108).</p>
-<p>Word will be a first class citizen in the ISA and CPU implementation. Word27 is planned to be the size for the CPU, with it having a Word27 amount of registers and. I will likely end up referring to this as a 27-trit CPU architecture, analogous to 32-bit CPU architecture.</p>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="register-file"><a class="header" href="#register-file">Register File</a></h1>
-<p>The register file uses 27 registers, with x0 reserved as a hardwired zero.</p>
-<p>This fits the ternary design nicely because 27 is 3^3.</p>
-<p>A couple of decisions will also have to be made about whether the register list should be larger, and accommodate some postbox registers that can be shared between the ternary cores and binary cores.</p>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="isa"><a class="header" href="#isa">ISA</a></h1>
-<p>The ISA is fixed-format and RISC-like, but includes ternary-native instructions.</p>
-<p>A lot of decisions still need to be made around how the ISA is implemented, to keep it inline with how a proper RISC-V ternary implementation would look. For this part, I’ll need to read into how RV32IM (the M just signifies multiplication and division) is set up, likely as part of my attempt to integrate a binary core into here as well.</p>
-<p>A couple instructions that would be unique to a ternary system would be a TSIGN instruction, TCON for consensus and some 3 way branches.</p>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="memory-map"><a class="header" href="#memory-map">Memory Map</a></h1>
+<h1 id="memory-map"><a class="header" href="#memory-map">Memory map</a></h1>
 <p>Here protocols for MMIO devices, UART, framebuffer and so on will be defined. This will likely not be as in depth, and might focus on some experimental connections that are more ternary native, as otherwise, a binary core is way more suited for protocols already defined for binary.</p>
 <p>In the future, the protocols, memory addresses and so on will be described in depth in this chapter.</p>
+<!-- TODO: Write about the efforts for trit compacting with bit shifting in core, as well as further compression for long term data storage -->
 <h2 id="vildrose-core-memory-map"><a class="header" href="#vildrose-core-memory-map">Vildrose core memory map</a></h2>
 <p>The allocation of a trit in memory in vildrose core, is currently, using an i8 to represent a trit, and thus, the memory map is as follows:</p>
 <pre><!--?xml version="1.0" encoding="utf-8"?--><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" data-d2-version="v0.7.1" preserveaspectratio="xMinYMin meet" viewbox="0 0 990 314"><svg class="d2-264799085 d2-svg" width="990" height="314" viewbox="-101 -101 990 314"><rect x="-101.000000" y="-101.000000" width="990.000000" height="314.000000" rx="0.000000" fill="#FFFFFF" class=" fill-N7" stroke-width="0" /><style type="text/css"><![CDATA[
@@ -1062,23 +1041,86 @@ pub fn abs(&amp;self) -&gt; Self {
 <p>The real issue with packing trits into bytes, is that it makes the memory map more complex, and thus, the CPU will have to do more work to read and write trits from memory. This is a trade off that will have to be considered when deciding on the final memory map.</p>
 <p>Tests for speed specifically should be setup, to see what maps best in regards to that.</p>
 <div style="break-before: page; page-break-before: always;"></div>
-<h1 id="guides-overview"><a class="header" href="#guides-overview">Guides Overview</a></h1>
-<p>These guides will explain how to use the project, likely going crate by crate, and also a bit about the project structure, building contributing and otherwise interacting with the project.</p>
-<p>As the project currently is not developed much, this will not go super in depth. And for many of the crates, the API-docs will be better, as something like vildrose-core, is mostly setup to be interacted with through crates and APIs.</p>
+<h1 id="bindings"><a class="header" href="#bindings">Bindings</a></h1>
 <div style="break-before: page; page-break-before: always;"></div>
-<h1 id="assembler"><a class="header" href="#assembler">Assembler</a></h1>
-<p>This guide will explain source format, labels, parsing, and assembly flow. Also going into detail on how ISA is implemented, hybrid CPU logic if applicable, and some testing scenarios.</p>
+<h1 id="python"><a class="header" href="#python">Python</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="c"><a class="header" href="#c">C</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="c-1"><a class="header" href="#c-1">C#</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="zig"><a class="header" href="#zig">Zig</a></h1>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="vm"><a class="header" href="#vm">VM</a></h1>
-<p>This guide will explain loading programs, stepping execution, and tracing behavior. Later on will also try to connect this to a display crate, and try to make some GPU implementation. In ideal world, I’d get to have a system with a hybrid CPU that has ternary and binary cores, that also interacts with a GPU that is the same way.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="ternary"><a class="header" href="#ternary">Ternary</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="execution"><a class="header" href="#execution">Execution</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="vildcode"><a class="header" href="#vildcode">Vildcode</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="hybrid-systems"><a class="header" href="#hybrid-systems">Hybrid systems</a></h1>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="debugger"><a class="header" href="#debugger">Debugger</a></h1>
-<p>This guide will explain stepping, breakpoints, register inspection, and memory views.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="cli"><a class="header" href="#cli">CLI</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="gui"><a class="header" href="#gui">GUI</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="hyldeblomst"><a class="header" href="#hyldeblomst">Hyldeblomst</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="vildcode-1"><a class="header" href="#vildcode-1">Vildcode</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="isa-targets"><a class="header" href="#isa-targets">ISA targets</a></h1>
+<p>I have foregone the idea of making my own ISA, as I am not nearly experienced enough to make decisions about such things, instead I will be building my VM on the idea of supporting a couple different ISAs. Some for ternary, some for binary, the idea with this is especially in regards to how logic can be shared or split between both types.</p>
+<p><a href="#ternary-1">Ternary ISAs</a></p>
+<p><a href="#binary">Binary ISAs</a></p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="ternary-1"><a class="header" href="#ternary-1">Ternary</a></h1>
+<ul>
+<li><a href="https://codeberg.org/setnex-org/setnex-isa">Setnex</a></li>
+<li><a href="https://github.com/aiunderstand/ternary-workbench/blob/master/docs/rebel6-isa.md">REBEL-6</a></li>
+<li>5500FP</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="binary"><a class="header" href="#binary">Binary</a></h1>
+<ul>
+<li><a href="https://github.com/riscv/riscv-isa-manual">RISC-V</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="language-goals"><a class="header" href="#language-goals">Language goals</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="binary-and-ternary-native"><a class="header" href="#binary-and-ternary-native">Binary and ternary native</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="libadalang-library"><a class="header" href="#libadalang-library">libadalang library</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="system-library"><a class="header" href="#system-library">System library</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="abstraction"><a class="header" href="#abstraction">Abstraction</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="types"><a class="header" href="#types">Types</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="logic"><a class="header" href="#logic">Logic</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="limitations"><a class="header" href="#limitations">Limitations</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="intermediate-language"><a class="header" href="#intermediate-language">Intermediate language</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="abstraction-1"><a class="header" href="#abstraction-1">Abstraction</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="logic-1"><a class="header" href="#logic-1">Logic</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="compiling-to-vildcode"><a class="header" href="#compiling-to-vildcode">Compiling to vildcode</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="abstraction-2"><a class="header" href="#abstraction-2">Abstraction</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="vildcode-to-native"><a class="header" href="#vildcode-to-native">Vildcode to native</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="platform-differences"><a class="header" href="#platform-differences">Platform differences</a></h1>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="roadmap"><a class="header" href="#roadmap">Roadmap</a></h1>
-<p>The documentation can track implementation phases as the project grows.</p>
-<p>Future chapters can be expanded as each subsystem becomes real.</p>
-<p>For now, follow the git repo, the readme roadmap, the issues and github project.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="records"><a class="header" href="#records">Records</a></h1>
 
                     </main>
 
@@ -1116,7 +1158,7 @@ pub fn abs(&amp;self) -&gt; Self {
 
         <script src="clipboard-1626706a.min.js"></script>
         <script src="highlight-abc7f01d.js"></script>
-        <script src="book-c22b7243.js"></script>
+        <script src="book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
 

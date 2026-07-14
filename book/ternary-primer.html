@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Ternary Primer - Vildrose</title>
+        <title>Ternary primer - Vildrose</title>
 
 
         <!-- Custom HTML head -->
@@ -15,8 +15,8 @@
         <link rel="icon" href="favicon-de23e50b.svg">
         <link rel="shortcut icon" href="favicon-8114d1fc.png">
         <link rel="stylesheet" href="css/variables-8adf115d.css">
-        <link rel="stylesheet" href="css/general-0392ca55.css">
-        <link rel="stylesheet" href="css/chrome-fc474251.css">
+        <link rel="stylesheet" href="css/general-e96d0476.css">
+        <link rel="stylesheet" href="css/chrome-d279d366.css">
         <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
 
         <!-- Fonts -->
@@ -35,10 +35,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "ayu";
-            window.path_to_searchindex_js = "searchindex-54cbb634.js";
+            window.path_to_searchindex_js = "searchindex-65c1076a.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-a778a8aa.js"></script>
+        <script src="toc-01d7fc3f.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -207,12 +207,14 @@
 <h2 id="words"><a class="header" href="#words">Words</a></h2>
 <p>A Word refers to the collection of bits / trits in an array like manner. A Byte is a form of Word, specifically a binary Word of 8 bits. With this, an int8 can also be described as a binary Word8. However, when we use Word in this project, it refers to a ternary Word of trits that are devisable by 3. The main forms are:</p>
 <ul>
+<li>Tribble (similar to a nibble, neither are really considered as direct types though)</li>
 <li>Word9 (also called Tryte, similar to a Byte / i8)</li>
 <li>Word27 (similar to i32)</li>
 <li>Word54 (similar to i64)</li>
 <li>Word108 (similar to i128)</li>
 </ul>
 <p>Words will be used in a similar way as ints in this project, and Tryte specifically, will be the ternary answer to Bytes.</p>
+<!-- TODO: Rewrite this comparison, it could be better -->
 <p>With this defined, we can define a system architecture like we’re used to with Binary. My computer for example has a 64-bit CPU and 16 gigabytes of RAM. A ternary computer in a similar range would have a 54-trit CPU and 18 gigatrytes of RAM. (note that I don’t know if I did the conversion that well, and that ternary memory would hold more storage due to having one more state for using trits over bits, and a tryte having one more trit, than bytes have bits)</p>
 <p>Ternary Words also have a couple of interesting benefits, my favorite relating to it’s signed nature by default. How do you know whether a ternary Word is positive or negative? Look through it’s trits, the first non zero trit from left to right will correspond to it’s sign, and if it’s 0, then that perfectly fits with the 0 value of a trit as well. Want to flip the sign of a Word? Easy, just flip the sign of each trit in the word. Want the absolute value of the Word? Just flip all the negative trits. Also the fact that it’s max and min value are the same, just with one positive, the other negative is also deliciously simple.</p>
 <p>If you find this type of manipulation of Words as interesting as I do, then I can strongly recommend playing with a <a href="https://countingmethods.com/balanced-ternary-converter-tool/">balanced ternary calculator</a>.</p>
@@ -229,11 +231,11 @@
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="project.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="project-phases.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="ternary-overview.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -243,11 +245,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="project.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="project-phases.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="ternary-overview.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>
@@ -273,7 +275,7 @@
 
         <script src="clipboard-1626706a.min.js"></script>
         <script src="highlight-abc7f01d.js"></script>
-        <script src="book-c22b7243.js"></script>
+        <script src="book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
 

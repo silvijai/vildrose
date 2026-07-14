@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["Tryte","Word27","Word54"],"trait":["CheckedDiv","WordType"],"type":["Word9"]};
+window.SIDEBAR_ITEMS = {"enum":["WordError"],"struct":["Word"],"trait":["CheckedDiv"],"type":["Tribble","Tryte","Word27","Word54","Word9"]};
