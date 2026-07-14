@@ -102,7 +102,7 @@ fn tryte_tshr_large_shift_fills_with_positive_sign() {
 
     let shifted = value.tshr(Tryte::TRIT_COUNT);
 
-    assert_eq!(shifted, Tryte::from_trits([Trit::P; Tryte::TRIT_COUNT]));
+    assert_eq!(shifted, Tryte::new([Trit::P; Tryte::TRIT_COUNT]));
 }
 
 #[test]
@@ -111,7 +111,7 @@ fn tryte_tshr_large_shift_fills_with_negative_sign() {
 
     let shifted = value.tshr(Tryte::TRIT_COUNT);
 
-    assert_eq!(shifted, Tryte::from_trits([Trit::N; Tryte::TRIT_COUNT]));
+    assert_eq!(shifted, Tryte::new([Trit::N; Tryte::TRIT_COUNT]));
 }
 
 #[test]

@@ -20,7 +20,7 @@ test-crate crate:
 
 # Full testing suite
 test-full:
-    cargo nextest run --workspace --run-ignored all
+    cargo nextest run --workspace --run-ignored all --no-fail-fast
 
 # Linting with clippy
 lint:

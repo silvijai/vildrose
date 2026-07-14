@@ -1,5 +1,5 @@
 // Construction related tests for Tryte, Word27, and Word54.
-// Test for functions like new, zero, from_trits, etc. that are related to constructing these types.
+// Test for functions like new, zero, etc. that are related to constructing these types.
 
 use vildrose_core::{
     trit::Trit,
@@ -40,7 +40,7 @@ fn tryte_zero() {
 #[test]
 fn tryte_from_trits() {
     let trits = [Trit::P; 9];
-    let t = Tryte::from_trits(trits);
+    let t = Tryte::new(trits);
     for i in 0..9 {
         assert_eq!(t.trit(i), Trit::P);
     }
@@ -100,15 +100,6 @@ fn word9_zero() {
     let w = Word9::zero();
     for i in 0..9 {
         assert_eq!(w.trit(i), Trit::Z);
-    }
-}
-
-#[test]
-fn word9_from_trits() {
-    let trits = [Trit::P; 9];
-    let w = Word9::from_trits(trits);
-    for i in 0..9 {
-        assert_eq!(w.trit(i), Trit::P);
     }
 }
 
@@ -184,15 +175,6 @@ fn word27_zero() {
     let w = Word27::zero();
     for i in 0..27 {
         assert_eq!(w.trit(i), Trit::Z);
-    }
-}
-
-#[test]
-fn word27_from_trits() {
-    let trits = [Trit::P; 27];
-    let w = Word27::from_trits(trits);
-    for i in 0..27 {
-        assert_eq!(w.trit(i), Trit::P);
     }
 }
 
@@ -316,24 +298,15 @@ fn word54_zero() {
     }
 }
 
-#[test]
-fn word54_from_trits() {
-    let trits = [Trit::P; 54];
-    let w = Word54::from_trits(trits);
-    for i in 0..54 {
-        assert_eq!(w.trit(i), Trit::P);
-    }
-}
-
 // <- Compile-time checks guaranteeing functions are truly const
 const _: Tryte = Tryte::zero();
-const _: Tryte = Tryte::from_trits([Trit::Z; 9]);
+const _: Tryte = Tryte::new([Trit::Z; 9]);
 
 const _: Word9 = Word9::zero();
-const _: Word9 = Word9::from_trits([Trit::Z; 9]);
+const _: Word9 = Word9::new([Trit::Z; 9]);
 
 const _: Word27 = Word27::zero();
-const _: Word27 = Word27::from_trits([Trit::Z; 27]);
+const _: Word27 = Word27::new([Trit::Z; 27]);
 
 const _: Word54 = Word54::zero();
-const _: Word54 = Word54::from_trits([Trit::Z; 54]);
+const _: Word54 = Word54::new([Trit::Z; 54]);

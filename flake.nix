@@ -66,7 +66,6 @@
 
             # Cargo tools
             pkgs.cargo-nextest
-            pkgs.cargo-watch
             pkgs.cargo-expand
             pkgs.cargo-deny
             pkgs.cargo-zigbuild

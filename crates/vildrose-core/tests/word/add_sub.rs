@@ -1,6 +1,6 @@
 use crate::common::{tryte_p0, word27_p1, word54_p2};
 use vildrose_core::trit::Trit;
-use vildrose_core::word::{Tryte, Word27, Word54};
+use vildrose_core::word::{Tribble, Tryte, Word27, Word54};
 
 #[test]
 fn tryte_negate() {
@@ -104,6 +104,36 @@ fn tryte_sign_negative() {
 #[test]
 fn tryte_sign_zero() {
     assert_eq!(Tryte::zero().sign(), Trit::Z);
+}
+
+#[test]
+fn tribble_sign_positive() {
+    let mut trits = [Trit::Z; 3];
+    trits[2] = Trit::P;
+    assert_eq!(Tribble::new(trits).sign(), Trit::P);
+}
+
+#[test]
+fn tribble_sign_negative() {
+    let mut trits = [Trit::Z; 3];
+    trits[2] = Trit::N;
+    assert_eq!(Tribble::new(trits).sign(), Trit::N);
+}
+
+#[test]
+fn tribble_sign_zero() {
+    assert_eq!(Tribble::zero().sign(), Trit::Z);
+}
+
+#[test]
+fn tribble_negate() {
+    let mut trits = [Trit::Z; 3];
+    trits[0] = Trit::P;
+    let neg = Tribble::new(trits).negate();
+    assert_eq!(neg.trit(0), Trit::N);
+    for i in 1..3 {
+        assert_eq!(neg.trit(i), Trit::Z);
+    }
 }
 
 #[test]
