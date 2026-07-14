@@ -1,0 +1,72 @@
+min_version = "2026.7.0"
+
+[env]
+RUSTC_WRAPPER = "sccache"
+
+[tools]
+python = "3.13"
+
+"cargo:cargo-nextest" = "latest"
+"cargo:cargo-expand" = "latest"
+"cargo:cargo-deny" = "latest"
+"cargo:cargo-zigbuild" = "latest"
+"cargo:sccache" = "latest"
+"cargo:bacon" = "latest"
+"cargo:git-cliff" = "latest"
+"cargo:mdbook" = "latest"
+"cargo:mdbook-d2" = "latest"
+
+"aqua:terrastruct/d2" = "latest"
+
+[tasks.build]
+description = "Build all workspace crates"
+run = "cargo build --workspace"
+
+[tasks.test]
+description = "Run standard workspace tests"
+run = "cargo nextest run --workspace"
+
+[tasks.test-full]
+description = "Run all tests, including ignored tests"
+run = "cargo nextest run --workspace --run-ignored all --no-fail-fast"
+
+[tasks.lint]
+description = "Run Clippy with warnings treated as errors"
+run = 'RUSTFLAGS="-D warnings" cargo clippy --workspace --all-targets'
+
+[tasks.fmt]
+description = "Format Rust"
+run = "cargo fmt --all"
+
+[tasks.docs]
+description = "Build and open Rust API documentation"
+run = "cargo doc --workspace --no-deps --open"
+
+[tasks.docs-test]
+description = "Build private API documentation"
+run = "cargo doc --workspace --no-deps --document-private-items"
+
+[tasks.book]
+description = "Serve the mdBook"
+run = "mdbook serve docs/"
+
+[tasks.book-test]
+description = "Test mdBook documentation"
+run = "mdbook test docs/"
+
+[tasks.watch]
+description = "Continuously run the tests"
+run = "bacon test"
+
+[tasks.watch-crate]
+description = "Run Bacon for one package"
+run = "bacon -j test -- -p {{arg(name='crate')}}"
+
+[tasks.ci]
+description = "Run CI-equivalent checks"
+depends = ["lint", "test-full"]
+
+[tasks.check]
+description = "Run every local quality check (run this before committing)"
+output = "interleave"
+depends = ["ci", "docs-test", "book-test"]

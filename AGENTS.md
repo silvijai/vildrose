@@ -114,7 +114,6 @@ vildrose/
 ├── Cargo.toml
 ├── Cargo.lock
 ├── justfile
-├── flake.nix / flake.lock
 ├── .editorconfig
 ├── cspell.json
 └── docs/
@@ -214,21 +213,24 @@ widths. vildrose-core types are not tied to any single ISA's word size.
 
 ## Build & Testing Pipeline
 
-### Task Runner: Just
+### Task Runner: Mise
 
 ```bash
-just build          # Build workspace (vildrose-core only by default)
-just test           # Run unit tests with nextest
-just test-crate X   # Test specific crate X
-just test-full      # Test with ignored tests included
-just lint           # Run clippy with warnings-as-errors
-just fmt            # Format code + flake.nix
-just docs           # Generate & open documentation
-just book           # Serve mdbook documentation (docs branch)
-just watch          # Watch & re-test on changes (using bacon)
-just watch-crate X  # Watch specific crate
-just release-all    # Cross-compile with zigbuild
-just ci             # Full CI: lint, test-full, nix flake check
+➜ mise tasks
+Name         Description
+book         Serve the mdBook
+book-test    Test mdBook documentation
+build        Build all workspace crates
+check        Run every local quality check (run this before committing)
+ci           Run CI-equivalent checks
+docs         Build and open Rust API documentation
+docs-test    Build private API documentation
+fmt          Format Rust
+lint         Run Clippy with warnings treated as errors
+test         Run standard workspace tests
+test-full    Run all tests, including ignored tests
+watch        Continuously run the tests
+watch-crate  Run Bacon for one package
 ```
 
 ### Linting Configuration
@@ -278,16 +280,14 @@ must_use_candidate = "allow"
 
 ## Development Environment
 
-### Nix/NixOS
+### Mise
 
 ```bash
-nix flake update
-nix develop
-nix flake check
+mise tasks
 ```
 
 Included tools: Rust toolchain (1.87+), Cargo, Clippy, Rustfmt, Nextest,
-Bacon, Zigbuild, mdbook, nixfmt.
+Bacon, Zigbuild, mdbook.
 
 ### Spell Checking
 

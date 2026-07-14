@@ -5,12 +5,12 @@ Hi. Thank you for being interested in ternary computing. Currently this is a hob
 I will still explain some of the build pipelines and testing philosophy. But really, don't hesitate to reach out if you have any questions or want to contribute.
 
 ## Building
-For building this project, I recommend using the justfile. You can find the full list of available commands by running `just --list`.
+For building this project, I recommend using the mise. You can find the commands by using 'mise tasks' in the terminal.
 The dependencies are:
-- just
+- mise
 - rust
 - cargo
-- git
+- git (or jj)
 
 ## Pull requests
 If you want to contribute, please open a pull request. I will review it as soon as possible. Please follow DCO and [the linux kernels AI attribution guidelines](https://docs.kernel.org/process/coding-assistants.html).
