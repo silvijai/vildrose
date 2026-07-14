@@ -33,6 +33,7 @@ https://www.manitlab.org/blog/posts/tritfs-address-space/
 
 ## Words
 A Word refers to the collection of bits / trits in an array like manner. A Byte is a form of Word, specifically a binary Word of 8 bits. With this, an int8 can also be described as a binary Word8. However, when we use Word in this project, it refers to a ternary Word of trits that are devisable by 3. The main forms are:
+- Tribble (similar to a nibble, neither are really considered as direct types though)
 - Word9 (also called Tryte, similar to a Byte / i8)
 - Word27 (similar to i32)
 - Word54 (similar to i64)
@@ -40,6 +41,7 @@ A Word refers to the collection of bits / trits in an array like manner. A Byte 
 
 Words will be used in a similar way as ints in this project, and Tryte specifically, will be the ternary answer to Bytes.
 
+<!-- TODO: Rewrite this comparison, it could be better -->
 With this defined, we can define a system architecture like we're used to with Binary. My computer for example has a 64-bit CPU and 16 gigabytes of RAM. A ternary computer in a similar range would have a 54-trit CPU and 18 gigatrytes of RAM. (note that I don't know if I did the conversion that well, and that ternary memory would hold more storage due to having one more state for using trits over bits, and a tryte having one more trit, than bytes have bits)
 
 Ternary Words also have a couple of interesting benefits, my favorite relating to it's signed nature by default. How do you know whether a ternary Word is positive or negative? Look through it's trits, the first non zero trit from left to right will correspond to it's sign, and if it's 0, then that perfectly fits with the 0 value of a trit as well. Want to flip the sign of a Word? Easy, just flip the sign of each trit in the word. Want the absolute value of the Word? Just flip all the negative trits. Also the fact that it's max and min value are the same, just with one positive, the other negative is also deliciously simple.

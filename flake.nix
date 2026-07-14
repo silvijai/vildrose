@@ -19,7 +19,14 @@
       flake-utils,
       ...
     }:
-    flake-utils.lib.eachDefaultSystem (
+    let
+      systems = [
+        "aarch64-darwin"
+        "aarch64-linux"
+        "x86_64-linux"
+      ];
+    in
+    flake-utils.lib.eachSystem systems (
       system:
       let
         pkgs = import nixpkgs {
@@ -105,7 +112,7 @@
           '';
         };
 
-        formatter = pkgs.nixfmt-rfc-style;
+        formatter = pkgs.nixfmt;
       }
     );
 }

@@ -16,7 +16,7 @@ VM for running ternary and binary ISAs together in an attempt to optimize algori
 
 - Anemone
 
-A GUI and CLI debugger for Hyldeblomst and Vildlang.
+A GUI and CLI debugger for Hyldeblomst and Vildlang / Vildcode.
 
 - Vildlang (working title)
   - LSP
