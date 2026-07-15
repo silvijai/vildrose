@@ -30,6 +30,9 @@ jobs:
             arch: aarch64
             runner: macos-15
 
+    env:
+      CARGO_INCREMENTAL: 0
+
     steps:
       - uses: actions/checkout@v4
 
@@ -40,6 +43,10 @@ jobs:
 
       - name: Cache Rust build artifacts
         uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: workspace
+          cache-all-crates: true
+          cache-on-failure: true
 
       - name: Install cargo-nextest
         uses: taiki-e/install-action@nextest
