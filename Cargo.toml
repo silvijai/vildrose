@@ -4,7 +4,6 @@ members = [
     "crates/vildrose-core",
     "crates/vildrose-isa",
     "crates/hyldeblomst",
-    # "crates/vildrose-dbg",
 ]
 
 # Only build active crates with bare `cargo build`.
@@ -13,7 +12,6 @@ default-members = [
     "crates/vildrose-core",
     "crates/vildrose-isa",
     "crates/hyldeblomst",
-    # "crates/vildrose-dbg",
 ]
 
 [workspace.package]
@@ -34,6 +32,7 @@ vildrose-isa = { path = "crates/vildrose-isa" }
 # Testing
 proptest = "1"
 insta = { version = "1", features = ["ron"] }
+criterion = { version = "0.5", features = ["html_reports"] }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

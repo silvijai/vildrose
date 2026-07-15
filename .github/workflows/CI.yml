@@ -49,5 +49,8 @@ jobs:
         env:
           RUSTFLAGS: -D warnings
 
+      - name: Compile Criterion benchmarks
+        run: cargo bench --workspace --no-run
+
       - name: Run nextest full suite
         run: cargo nextest run --workspace --run-ignored all

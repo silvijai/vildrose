@@ -30,21 +30,29 @@ run = "cargo nextest run --workspace"
 description = "Run all tests, including ignored tests"
 run = "cargo nextest run --workspace --run-ignored all --no-fail-fast"
 
+[tasks.bench]
+description = "Run Criterion benchmarks"
+run = "cargo bench --workspace"
+
+[tasks.bench-test]
+description = "Compile Criterion benchmarks without running them"
+run = "cargo bench --workspace --no-run"
+
 [tasks.lint]
 description = "Run Clippy with warnings treated as errors"
-run = 'RUSTFLAGS="-D warnings" cargo clippy --workspace --all-targets'
+run = "cargo clippy --workspace --all-targets --all-features -- -D warnings"
 
 [tasks.fmt]
 description = "Format Rust"
 run = "cargo fmt --all"
 
 [tasks.docs]
-description = "Build and open Rust API documentation"
-run = "cargo doc --workspace --no-deps --open"
+description = "Build Rust API documentation"
+run = 'RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps'
 
 [tasks.docs-test]
-description = "Build private API documentation"
-run = "cargo doc --workspace --no-deps --document-private-items"
+description = "Run Rust documentation tests"
+run = "cargo test --workspace --doc"
 
 [tasks.book]
 description = "Serve the mdBook"
@@ -69,4 +77,4 @@ depends = ["lint", "test-full"]
 [tasks.check]
 description = "Run every local quality check (run this before committing)"
 output = "interleave"
-depends = ["ci", "docs-test", "book-test"]
+depends = ["ci", "docs-test", "book-test", "bench-test"]
