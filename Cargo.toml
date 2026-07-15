@@ -60,3 +60,6 @@ strip = "symbols"
 
 [profile.test]
 opt-level = 1
+
+[profile.bench]
+debug = true

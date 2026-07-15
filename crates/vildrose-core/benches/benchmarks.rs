@@ -4,4 +4,4 @@ mod word;
 
 use criterion::criterion_main;
 
-criterion_main!(word::layout::benches);
+criterion_main!(word::layout::benches, word::arithmetics::benches,);
