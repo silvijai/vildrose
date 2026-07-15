@@ -35,3 +35,19 @@ pub fn tryte_strategy() -> impl Strategy<Value = Tryte> {
         Tryte::from_int(value).expect("generated in-range Tryte value must be valid")
     })
 }
+
+/// Returns a strategy for generating Word27 values.
+#[allow(dead_code)]
+pub fn word27_strategy() -> impl Strategy<Value = Word27> {
+    (Word27::MIN_INT..=Word27::MAX_INT).prop_map(|value| {
+        Word27::from_int(value).expect("generated in-range Word27 value must be valid")
+    })
+}
+
+/// Returns a strategy for generating Word54 values.
+#[allow(dead_code)]
+pub fn word54_strategy() -> impl Strategy<Value = Word54> {
+    (Word54::MIN_INT..=Word54::MAX_INT).prop_map(|value| {
+        Word54::from_int(value).expect("generated in-range Word54 value must be valid")
+    })
+}

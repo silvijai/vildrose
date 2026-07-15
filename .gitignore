@@ -74,3 +74,10 @@ docs/_build/
 
 # Pyenv
 .python-version
+
+# Mise local state, if created in this repo
+.mise.local.toml
+mise.local.toml
+
+# Rust proptest
+.proptest-*

@@ -194,8 +194,41 @@ fn word54_add_overflow_wraps_to_min() {
     assert_eq!(i128::from(sum), Word54::MIN_INT);
 }
 
+fn wrap_balanced_i16(value: i32, trit_count: u32) -> i16 {
+    let modulus = 3_i32.pow(trit_count);
+    let half_range = (modulus - 1) / 2;
+    let wrapped = (value + half_range).rem_euclid(modulus) - half_range;
+    i16::try_from(wrapped).expect("wrapped Tryte value must fit in i16")
+}
+
 // TODO: Use more of these strategies in tests
 proptest! {
+    #[test]
+    fn tryte_add_matches_wrapping_balanced_model(
+        value1 in tryte_strategy(),
+        value2 in tryte_strategy(),
+    ) {
+        let expected = wrap_balanced_i16(
+            i32::from(i16::from(value1)) + i32::from(i16::from(value2)),
+            9,
+        );
+
+        prop_assert_eq!(i16::from(value1 + value2), expected);
+    }
+
+    #[test]
+    fn tryte_sub_matches_wrapping_balanced_model(
+        value1 in tryte_strategy(),
+        value2 in tryte_strategy(),
+    ) {
+        let expected = wrap_balanced_i16(
+            i32::from(i16::from(value1)) - i32::from(i16::from(value2)),
+            9,
+        );
+
+        prop_assert_eq!(i16::from(value1 - value2), expected);
+    }
+
     #[test]
     fn negation_is_an_involution(value in tryte_strategy()) {
         prop_assert_eq!(-(-value), value);
