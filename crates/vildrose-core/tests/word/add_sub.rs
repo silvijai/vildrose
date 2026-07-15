@@ -1,4 +1,5 @@
-use crate::common::{tryte_p0, word27_p1, word54_p2};
+use crate::common::{tryte_p0, tryte_strategy, word27_p1, word54_p2};
+use proptest::prelude::*;
 use vildrose_core::trit::Trit;
 use vildrose_core::word::{Tribble, Tryte, Word27, Word54};
 
@@ -191,4 +192,50 @@ fn word54_add_overflow_wraps_to_min() {
     let sum = max + tryte_p0();
     assert_eq!(sum.sign(), Trit::N);
     assert_eq!(i128::from(sum), Word54::MIN_INT);
+}
+
+// TODO: Use more of these strategies in tests
+proptest! {
+    #[test]
+    fn negation_is_an_involution(value in tryte_strategy()) {
+        prop_assert_eq!(-(-value), value);
+    }
+
+    #[test]
+    fn zero_is_the_additive_identity(value in tryte_strategy()) {
+        prop_assert_eq!(value + Tryte::zero(), value);
+        prop_assert_eq!(Tryte::zero() + value, value);
+    }
+
+    #[test]
+    fn subtracting_self_produces_zero(value in tryte_strategy()) {
+        prop_assert_eq!(value - value, Tryte::zero());
+    }
+
+    #[test]
+    fn one_is_the_multiplicative_identity(value in tryte_strategy()) {
+        let one = match Tryte::from_int(1) {
+            Ok(word) => word,
+            Err(error) => panic!("one must fit in Tryte: {error}"),
+        };
+
+        prop_assert_eq!(value * one, value);
+        prop_assert_eq!(one * value, value);
+    }
+
+    #[test]
+    fn multiplication_is_commutative(
+        left in tryte_strategy(),
+        right in tryte_strategy(),
+    ) {
+        prop_assert_eq!(left * right, right * left);
+    }
+
+    #[test]
+    fn ordering_matches_the_integer_conversion(
+        left in tryte_strategy(),
+        right in tryte_strategy(),
+    ) {
+        prop_assert_eq!(left.cmp(&right), left.to_int().cmp(&right.to_int()));
+    }
 }

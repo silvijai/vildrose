@@ -1,3 +1,5 @@
+use crate::common::tryte_strategy;
+use proptest::prelude::*;
 use vildrose_core::word::{Tryte, Word27, Word54};
 
 #[test]
@@ -85,4 +87,21 @@ fn word54_mul_word27_cross_width() {
     let a = Word27::from_int(9).unwrap();
     let b = Word54::from_int(11).unwrap();
     assert_eq!((a * b).to_int(), 99);
+}
+
+const fn wrap_balanced(value: i32, trit_count: u32) -> i32 {
+    let modulus = 3_i32.pow(trit_count);
+    let half_range = (modulus - 1) / 2;
+    (value + half_range).rem_euclid(modulus) - half_range
+}
+
+proptest! {
+    #[test]
+    fn multiplication_matches_wrapping_integer_model(
+        left in tryte_strategy(),
+        right in tryte_strategy(),
+    ) {
+        let expected = wrap_balanced(i32::from(left.to_int()) * i32::from(right.to_int()), 9);
+        prop_assert_eq!(i32::from((left * right).to_int()), expected);
+    }
 }

@@ -1,5 +1,6 @@
 //! Common attributes shared across multiple test modules.
 
+use proptest::prelude::*;
 use vildrose_core::trit::Trit;
 use vildrose_core::word::{Tryte, Word27, Word54};
 
@@ -25,4 +26,12 @@ pub const fn word54_p2() -> Word54 {
     let mut trits = [Trit::Z; 54];
     trits[2] = Trit::P;
     Word54::new(trits)
+}
+
+/// Returns a strategy for generating Tryte values.
+#[allow(dead_code)]
+pub fn tryte_strategy() -> impl Strategy<Value = Tryte> {
+    (Tryte::MIN_INT..=Tryte::MAX_INT).prop_map(|value| {
+        Tryte::from_int(value).expect("generated in-range Tryte value must be valid")
+    })
 }
