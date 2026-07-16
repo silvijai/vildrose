@@ -2,7 +2,7 @@
 use std::fmt::Write;
 
 /// A single balanced ternary property. Analogous to a bit in binary, just with three states: N, Z and P.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[repr(i8)]
 pub enum Trit {
     /// Trit value referring to, negative, -1 or unknown

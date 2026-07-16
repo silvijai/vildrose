@@ -3,7 +3,7 @@
 //! CSR addresses are T3 (3 trits), providing 27 addressable slots
 //! with integer values in -13..=13. Each CSR is a full T27 word.
 //! Unused slots are reserved and read as zero.
-//
+//!
 //! See setnex-spec §2.2 for the architectural CSR map.
 
 use vildrose_core::trit::Trit;

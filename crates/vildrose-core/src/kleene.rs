@@ -3,7 +3,7 @@
 use crate::trit::Trit;
 
 /// A struct representing a Kleene logic value, which can be one of three states: True (T), False (F), or Unknown (U).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Kleene {
     t: Trit,
 }

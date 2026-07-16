@@ -25,7 +25,7 @@ use crate::trit::Trit;
 /// Trits are stored in little-endian order: index zero is the
 /// least-significant trit.
 // Add hash in the future, requires it to be added to trit
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Word<const N: usize>(pub(crate) [Trit; N]);
 
 /// A 3-trit balanced ternary integer.
