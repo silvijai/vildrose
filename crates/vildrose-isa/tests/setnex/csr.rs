@@ -36,3 +36,13 @@ fn csr_new_preserves_the_tribble_address() {
 
     assert_eq!(csr.address(), address);
 }
+
+#[test]
+fn csr_constants_match_spec_addresses() {
+    assert_eq!(Csr::PC.address().to_int(), 1);
+    assert_eq!(Csr::LMODE.address().to_int(), 2);
+    assert_eq!(Csr::FLAGS.address().to_int(), 3);
+    assert_eq!(Csr::ETVAL2.address().to_int(), 13);
+    assert_eq!(Csr::MPU_SELECT.address().to_int(), -1);
+    assert_eq!(Csr::IPRIORITY.address().to_int(), -6);
+}
