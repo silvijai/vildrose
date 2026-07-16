@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["VECTOR_LANE_COUNT"],"struct":["SetnexVectorRegisters"],"type":["VectorWord"]};

@@ -1,2 +1,2 @@
-createSrcSidebar('[["hyldeblomst",["",[["setnex",[],["mod.rs","registers.rs"]]],["lib.rs","registers.rs"]]],["vildrose_core",["",[["word",[],["arithmetic.rs","basic.rs","conversion.rs","cross_width.rs","logic.rs","mod.rs"]]],["kleene.rs","lib.rs","ops.rs","trit.rs"]]],["vildrose_isa",["",[["setnex",[],["mod.rs","registers.rs"]]],["lib.rs"]]]]');
-//{"start":19,"fragment_lengths":[88,161,75]}
+createSrcSidebar('[["hyldeblomst",["",[["setnex",[],["csr.rs","mod.rs","registers.rs","vector_registers.rs"]]],["lib.rs","registers.rs"]]],["vildrose_core",["",[["word",[],["arithmetic.rs","basic.rs","conversion.rs","cross_width.rs","logic.rs","mod.rs"]]],["kleene.rs","lib.rs","ops.rs","trit.rs"]]],["vildrose_isa",["",[["setnex",[],["csr.rs","mod.rs","registers.rs","vector_registers.rs"]]],["lib.rs"]]]]');
+//{"start":19,"fragment_lengths":[119,161,106]}
