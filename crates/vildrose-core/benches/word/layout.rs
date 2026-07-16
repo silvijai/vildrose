@@ -1,323 +1,233 @@
-//! Benchmarks for word layout, seeing whether 1, 4, or 5 trits per byte are optimal. Both in terms of memory usage and performance.
+//! Benchmarks for word layout and trit packing, especially in relation
+//! to word-level operations.
 
-use criterion::{BenchmarkId, Criterion, Throughput, black_box, criterion_group, criterion_main};
+use std::hint::black_box;
+
+use core::fmt;
+use core::ops::Neg;
+use criterion::{BenchmarkId, Criterion, Throughput, criterion_group, criterion_main};
 use vildrose_core::trit::Trit;
 
-// TODO: Try setting this up with actual word sizes, more than a byte at a time, and figure out how much memory is saved by using different trit layouts
+#[allow(clippy::wildcard_imports)]
+use super::common::packed_trits::*;
 
-const fn trit_to_digit(trit: Trit) -> u8 {
-    match trit {
-        Trit::N => 0,
-        Trit::Z => 1,
-        Trit::P => 2,
+// TODO: look into using a larger byte array, and using the whole length to fit trits
+// So instead of 5 trits in one byte, it could be 27 trits in a u64
+
+// <- Basic word structure
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Word<const N: usize>(pub [Trit; N]);
+
+impl<const N: usize> Word<N> {
+    pub fn negate(self) -> Self {
+        Self(self.0.map(Trit::negate))
+    }
+
+    pub fn sign(self) -> Trit {
+        self.0
+            .iter()
+            .rev()
+            .copied()
+            .find(|&t| t != Trit::Z)
+            .unwrap_or(Trit::Z)
+    }
+
+    pub fn abs(self) -> Self {
+        if self.sign() == Trit::N {
+            self.negate()
+        } else {
+            self
+        }
     }
 }
 
-fn bits_to_trit(bits: u16) -> Trit {
-    match bits {
-        0b00 => Trit::N,
-        0b01 => Trit::Z,
-        0b10 => Trit::P,
-        _ => unreachable!("table contains an invalid 2-bit trit"),
+impl<const N: usize> Neg for Word<N> {
+    type Output = Self;
+
+    fn neg(self) -> Self::Output {
+        self.negate()
     }
 }
 
-fn digit_to_trit(digit: u8) -> Trit {
-    match digit {
+impl<const N: usize> fmt::Display for Word<N> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        for trit in self.0.iter().rev() {
+            write!(f, "{trit}")?;
+        }
+
+        Ok(())
+    }
+}
+
+// <- Word byte storage
+#[derive(Clone)]
+pub struct Word1<const N: usize> {
+    bytes: [u8; N],
+}
+
+#[derive(Clone)]
+pub struct Word4<const N: usize> {
+    bytes: Vec<u8>,
+}
+
+#[derive(Clone)]
+pub struct Word5<const N: usize> {
+    bytes: Vec<u8>,
+}
+
+// <- Word encoding
+pub trait WordEncoding<const N: usize>: Clone {
+    fn encode(word: &Word<N>) -> Self;
+    fn decode(&self) -> Word<N>;
+    fn layout_name() -> &'static str;
+}
+
+impl<const N: usize> WordEncoding<N> for Word1<N> {
+    fn encode(word: &Word<N>) -> Self {
+        let bytes = encode_1(&word.0);
+        Self {
+            bytes: bytes.try_into().unwrap(),
+        }
+    }
+
+    fn decode(&self) -> Word<N> {
+        let trits = decode_1_direct(&self.bytes, N);
+        Word(trits.try_into().unwrap())
+    }
+
+    fn layout_name() -> &'static str {
+        "1"
+    }
+}
+
+impl<const N: usize> WordEncoding<N> for Word4<N> {
+    fn encode(word: &Word<N>) -> Self {
+        Self {
+            bytes: encode_4(&word.0),
+        }
+    }
+
+    fn decode(&self) -> Word<N> {
+        let trits = decode_4_direct(&self.bytes, N);
+        Word(trits.try_into().unwrap())
+    }
+
+    fn layout_name() -> &'static str {
+        "4"
+    }
+}
+
+impl<const N: usize> WordEncoding<N> for Word5<N> {
+    fn encode(word: &Word<N>) -> Self {
+        Self {
+            bytes: encode_5(&word.0),
+        }
+    }
+
+    fn decode(&self) -> Word<N> {
+        let trits = decode_5_div(&self.bytes, N);
+        Word(trits.try_into().unwrap())
+    }
+
+    fn layout_name() -> &'static str {
+        "5"
+    }
+}
+
+fn input_word<const N: usize>() -> Word<N> {
+    Word(std::array::from_fn(|index| match (index * 17 + 11) % 3 {
         0 => Trit::N,
         1 => Trit::Z,
-        2 => Trit::P,
-        _ => unreachable!("base-3 digit must be 0, 1, or 2"),
-    }
+        _ => Trit::P,
+    }))
 }
 
-const INVALID: u16 = u16::MAX;
+fn bench_word_layout_for<const N: usize, E: WordEncoding<N>>(
+    group: &mut criterion::BenchmarkGroup<'_, criterion::measurement::WallTime>,
+) {
+    let word = input_word::<N>();
+    let encoded = E::encode(&word);
 
-fn encode_1(trits: &[Trit]) -> Vec<u8> {
-    trits.iter().copied().map(trit_to_digit).collect()
-}
+    _ = group.throughput(Throughput::Elements(N as u64));
 
-fn encode_4(trits: &[Trit]) -> Vec<u8> {
-    trits
-        .chunks(4)
-        .map(|chunk| {
-            let mut byte = 0_u8;
-            let mut place = 1_u8;
-
-            for trit in chunk {
-                byte += trit_to_digit(*trit) * place;
-                place *= 3;
-            }
-
-            byte
-        })
-        .collect()
-}
-
-fn encode_5(trits: &[Trit]) -> Vec<u8> {
-    trits
-        .chunks(5)
-        .map(|chunk| {
-            let mut byte = 0_u8;
-            let mut place = 1_u8;
-
-            for trit in chunk {
-                byte += trit_to_digit(*trit) * place;
-                place *= 3;
-            }
-
-            byte
-        })
-        .collect()
-}
-
-const fn make_decode_table(trits_per_byte: u16, valid_byte_count: u16) -> [u16; 256] {
-    let mut table = [INVALID; 256];
-    let mut byte = 0_u16;
-
-    while byte < valid_byte_count {
-        let mut remaining = byte;
-        let mut packed_trits = 0_u16;
-        let mut trit_index = 0_u16;
-
-        while trit_index < trits_per_byte {
-            let digit = remaining % 3;
-            packed_trits |= digit << (trit_index * 2);
-            remaining /= 3;
-            trit_index += 1;
-        }
-
-        table[byte as usize] = packed_trits;
-        byte += 1;
-    }
-
-    table
-}
-
-const DECODE_1_TABLE: [u16; 256] = make_decode_table(1, 3);
-const DECODE_4_TABLE: [u16; 256] = make_decode_table(4, 81);
-const DECODE_5_TABLE: [u16; 256] = make_decode_table(5, 243);
-
-fn decode_1_table(bytes: &[u8], trit_count: usize) -> Vec<Trit> {
-    decode_with_table(bytes, trit_count, 1, &DECODE_1_TABLE)
-}
-
-fn decode_4_table(bytes: &[u8], trit_count: usize) -> Vec<Trit> {
-    decode_with_table(bytes, trit_count, 4, &DECODE_4_TABLE)
-}
-
-fn decode_5_table(bytes: &[u8], trit_count: usize) -> Vec<Trit> {
-    decode_with_table(bytes, trit_count, 5, &DECODE_5_TABLE)
-}
-
-fn decode_with_table(
-    bytes: &[u8],
-    trit_count: usize,
-    trits_per_byte: usize,
-    table: &[u16; 256],
-) -> Vec<Trit> {
-    let mut result = Vec::with_capacity(trit_count);
-
-    for &byte in bytes {
-        let packed = table[usize::from(byte)];
-
-        assert_ne!(packed, INVALID, "invalid packed ternary byte: {byte}");
-
-        for index in 0..trits_per_byte {
-            if result.len() == trit_count {
-                return result;
-            }
-
-            let bits = (packed >> (index * 2)) & 0b11;
-            result.push(bits_to_trit(bits));
-        }
-    }
-
-    result
-}
-
-fn decode_1_direct(bytes: &[u8], trit_count: usize) -> Vec<Trit> {
-    assert!(
-        bytes.len() >= trit_count,
-        "not enough bytes for requested trit count",
+    _ = group.bench_function(
+        BenchmarkId::new(format!("{}/encode", E::layout_name()), N),
+        |b| b.iter(|| E::encode(black_box(&word))),
     );
 
-    bytes[..trit_count]
-        .iter()
-        .copied()
-        .map(digit_to_trit)
-        .collect()
+    _ = group.bench_function(
+        BenchmarkId::new(format!("{}/decode", E::layout_name()), N),
+        |b| b.iter(|| black_box(&encoded).decode()),
+    );
+
+    _ = group.bench_function(
+        BenchmarkId::new(format!("{}/negate", E::layout_name()), N),
+        |b| {
+            b.iter(|| {
+                let decoded = black_box(&encoded).decode();
+                let result = decoded.negate();
+                black_box(E::encode(&result))
+            });
+        },
+    );
+
+    _ = group.bench_function(
+        BenchmarkId::new(format!("{}/sign", E::layout_name()), N),
+        |b| {
+            b.iter(|| {
+                let decoded = black_box(&encoded).decode();
+                black_box(decoded.sign())
+            });
+        },
+    );
+
+    _ = group.bench_function(
+        BenchmarkId::new(format!("{}/abs", E::layout_name()), N),
+        |b| {
+            b.iter(|| {
+                let decoded = black_box(&encoded).decode();
+                let result = decoded.abs();
+                black_box(E::encode(&result))
+            });
+        },
+    );
+
+    _ = group.bench_function(
+        BenchmarkId::new(format!("{}/fmt", E::layout_name()), N),
+        |b| {
+            b.iter(|| {
+                let decoded = black_box(&encoded).decode();
+                black_box(decoded.to_string())
+            });
+        },
+    );
 }
 
-fn decode_4_div(bytes: &[u8], trit_count: usize) -> Vec<Trit> {
-    let mut result = Vec::with_capacity(trit_count);
+fn benchmark_word_layout(c: &mut Criterion) {
+    let mut group = c.benchmark_group("word layout");
 
-    for &byte in bytes {
-        let mut value = byte;
+    bench_word_layout_for::<3, Word1<3>>(&mut group);
+    bench_word_layout_for::<3, Word4<3>>(&mut group);
+    bench_word_layout_for::<3, Word5<3>>(&mut group);
 
-        for _ in 0..4 {
-            if result.len() == trit_count {
-                return result;
-            }
+    bench_word_layout_for::<9, Word1<9>>(&mut group);
+    bench_word_layout_for::<9, Word4<9>>(&mut group);
+    bench_word_layout_for::<9, Word5<9>>(&mut group);
 
-            result.push(digit_to_trit(value % 3));
-            value /= 3;
-        }
-    }
+    bench_word_layout_for::<27, Word1<27>>(&mut group);
+    bench_word_layout_for::<27, Word4<27>>(&mut group);
+    bench_word_layout_for::<27, Word5<27>>(&mut group);
 
-    result
-}
+    bench_word_layout_for::<54, Word1<54>>(&mut group);
+    bench_word_layout_for::<54, Word4<54>>(&mut group);
+    bench_word_layout_for::<54, Word5<54>>(&mut group);
 
-fn decode_5_div(bytes: &[u8], trit_count: usize) -> Vec<Trit> {
-    let mut result = Vec::with_capacity(trit_count);
-
-    for &byte in bytes {
-        let mut value = byte;
-
-        for _ in 0..5 {
-            if result.len() == trit_count {
-                return result;
-            }
-
-            result.push(digit_to_trit(value % 3));
-            value /= 3;
-        }
-    }
-
-    result
-}
-
-fn assert_tables_match_division() {
-    for byte in 0_u8..81 {
-        assert_eq!(
-            decode_4_table(&[byte], 4),
-            decode_4_div(&[byte], 4),
-            "4-trit table differs for byte {byte}",
-        );
-    }
-
-    for byte in 81_u8..=u8::MAX {
-        assert_eq!(
-            DECODE_4_TABLE[usize::from(byte)],
-            INVALID,
-            "invalid 4-trit byte {byte} has a table entry",
-        );
-    }
-
-    for byte in 0_u8..243 {
-        assert_eq!(
-            decode_5_table(&[byte], 5),
-            decode_5_div(&[byte], 5),
-            "5-trit table differs for byte {byte}",
-        );
-    }
-
-    for byte in 243_u8..=u8::MAX {
-        assert_eq!(
-            DECODE_5_TABLE[usize::from(byte)],
-            INVALID,
-            "invalid 5-trit byte {byte} has a table entry",
-        );
-    }
-}
-
-fn assert_round_trips() {
-    for length in 0..64 {
-        let trits = input(length);
-
-        let encoded_1 = encode_1(&trits);
-        let encoded_4 = encode_4(&trits);
-        let encoded_5 = encode_5(&trits);
-
-        assert_eq!(decode_1_direct(&encoded_1, length), trits);
-        assert_eq!(decode_1_table(&encoded_1, length), trits);
-        assert_eq!(decode_4_div(&encoded_4, length), trits);
-        assert_eq!(decode_4_table(&encoded_4, length), trits);
-        assert_eq!(decode_5_div(&encoded_5, length), trits);
-        assert_eq!(decode_5_table(&encoded_5, length), trits);
-
-        assert_eq!(encoded_1.len(), length);
-        assert_eq!(encoded_4.len(), length.div_ceil(4));
-        assert_eq!(encoded_5.len(), length.div_ceil(5));
-    }
-}
-
-// <- Criterion stuff starts here
-fn input(length: usize) -> Vec<Trit> {
-    (0..length)
-        .map(|index| match (index * 17 + 11) % 3 {
-            0 => Trit::N,
-            1 => Trit::Z,
-            _ => Trit::P,
-        })
-        .collect()
-}
-
-fn benchmark_layouts(c: &mut Criterion) {
-    assert_round_trips();
-    assert_tables_match_division();
-
-    let mut group = c.benchmark_group("trit packing");
-
-    for length in [9, 27, 54, 243, 1_024, 65_536] {
-        let trits = input(length);
-        let encoded_1 = encode_1(&trits);
-        let encoded_4 = encode_4(&trits);
-        let encoded_5 = encode_5(&trits);
-
-        _ = group.throughput(Throughput::Elements(length as u64));
-
-        _ = group.bench_with_input(BenchmarkId::new("1/encode", length), &trits, |b, trits| {
-            b.iter(|| encode_1(black_box(trits)));
-        });
-
-        _ = group.bench_with_input(BenchmarkId::new("4/encode", length), &trits, |b, trits| {
-            b.iter(|| encode_4(black_box(trits)));
-        });
-
-        _ = group.bench_with_input(BenchmarkId::new("5/encode", length), &trits, |b, trits| {
-            b.iter(|| encode_5(black_box(trits)));
-        });
-
-        _ = group.bench_with_input(
-            BenchmarkId::new("1/decode-direct", length),
-            &encoded_1,
-            |b, bytes| b.iter(|| decode_1_direct(black_box(bytes), length)),
-        );
-
-        _ = group.bench_with_input(
-            BenchmarkId::new("1/decode-table", length),
-            &encoded_1,
-            |b, bytes| b.iter(|| decode_1_table(black_box(bytes), length)),
-        );
-
-        _ = group.bench_with_input(
-            BenchmarkId::new("4/decode-div", length),
-            &encoded_4,
-            |b, bytes| b.iter(|| decode_4_div(black_box(bytes), length)),
-        );
-
-        _ = group.bench_with_input(
-            BenchmarkId::new("4/decode-table", length),
-            &encoded_4,
-            |b, bytes| b.iter(|| decode_4_table(black_box(bytes), length)),
-        );
-
-        _ = group.bench_with_input(
-            BenchmarkId::new("5/decode-div", length),
-            &encoded_5,
-            |b, bytes| b.iter(|| decode_5_div(black_box(bytes), length)),
-        );
-
-        _ = group.bench_with_input(
-            BenchmarkId::new("5/decode-table", length),
-            &encoded_5,
-            |b, bytes| b.iter(|| decode_5_table(black_box(bytes), length)),
-        );
-    }
+    bench_word_layout_for::<108, Word1<108>>(&mut group);
+    bench_word_layout_for::<108, Word4<108>>(&mut group);
+    bench_word_layout_for::<108, Word5<108>>(&mut group);
 
     group.finish();
 }
 
-criterion_group!(benches, benchmark_layouts);
+criterion_group!(benches, benchmark_word_layout);
 criterion_main!(benches);
