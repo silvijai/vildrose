@@ -22,66 +22,70 @@ impl Csr {
     // Positive addresses refer to user code and data.
     // Negative addresses refer to stack and kernel space
     // Using three trits for definition, rather than from_int(), since it's const methods
-    /// Address 0 0 + (decimal 1): Program counter (T27, word address).
+    /// Address Z Z P (decimal 1): Program counter (T27, word address).
     pub const PC: Self = Self(Tribble::new([Trit::P, Trit::Z, Trit::Z]));
 
-    /// Address 0 + – (decimal 2): Logic mode (see §6).
+    /// Address N P Z (decimal 2): Logic mode (see §6).
     pub const LMODE: Self = Self(Tribble::new([Trit::N, Trit::P, Trit::Z]));
 
-    /// Address 0 + 0 (decimal 3): Arithmetic flags (see §5.5).
+    /// Address Z P Z (decimal 3): Arithmetic flags (see §5.5).
     pub const FLAGS: Self = Self(Tribble::new([Trit::Z, Trit::P, Trit::Z]));
 
-    /// Address 0 + + (decimal 4): Exception program counter.
+    /// Address Z P P (decimal 4): Exception program counter.
     pub const EPC: Self = Self(Tribble::new([Trit::P, Trit::P, Trit::Z]));
 
-    /// Address + – – (decimal 5): Exception cause (T27).
+    /// Address P N N (decimal 5): Exception cause (T27).
     pub const ECAUSE: Self = Self(Tribble::new([Trit::N, Trit::N, Trit::P]));
 
-    /// Address + – 0 (decimal 6): Exception vector (handler address).
+    /// Address P N Z (decimal 6): Exception vector (handler address).
     pub const EVEC: Self = Self(Tribble::new([Trit::Z, Trit::N, Trit::P]));
 
-    /// Address + – + (decimal 7): Processor status (see §2.4).
+    /// Address P N P (decimal 7): Processor status (see §2.4).
     pub const STATUS: Self = Self(Tribble::new([Trit::P, Trit::N, Trit::P]));
 
-    /// Address + 0 – (decimal 8): Saved STATUS on exception entry.
+    /// Address P Z N (decimal 8): Saved STATUS on exception entry.
     pub const ESAVE: Self = Self(Tribble::new([Trit::N, Trit::Z, Trit::P]));
 
-    /// Address + 0 0 (decimal 9): Exception trap value (see §8.5).
+    /// Address P Z Z (decimal 9): Exception trap value (see §8.5).
     pub const ETVAL: Self = Self(Tribble::new([Trit::Z, Trit::Z, Trit::P]));
 
-    /// Address + 0 + (decimal 10): Frame-2 exception PC (nested).
+    /// Address P Z P (decimal 10): Frame-2 exception PC (nested).
     pub const EPC2: Self = Self(Tribble::new([Trit::P, Trit::Z, Trit::P]));
 
-    /// Address + + – (decimal 11): Frame-2 exception cause.
+    /// Address P P N (decimal 11): Frame-2 exception cause.
     pub const ECAUSE2: Self = Self(Tribble::new([Trit::N, Trit::P, Trit::P]));
 
-    /// Address + + 0 (decimal 12): Frame-2 saved STATUS.
+    /// Address P P Z (decimal 12): Frame-2 saved STATUS.
     pub const ESAVE2: Self = Self(Tribble::new([Trit::Z, Trit::P, Trit::P]));
 
-    /// Address + + + (decimal 13): Frame-2 exception trap value.
+    /// Address P P P (decimal 13): Frame-2 exception trap value.
     pub const ETVAL2: Self = Self(Tribble::new([Trit::P, Trit::P, Trit::P]));
 
-    /// Address 0 0 – (decimal -1): MPU region index selector.
+    /// Address Z Z N (decimal -1): MPU region index selector.
     pub const MPU_SELECT: Self = Self(Tribble::new([Trit::N, Trit::Z, Trit::Z]));
 
-    /// Address 0 – + (decimal -2): Base address of the selected MPU region.
+    /// Address Z N P (decimal -2): Base address of the selected MPU region.
     pub const MPU_BASE: Self = Self(Tribble::new([Trit::P, Trit::N, Trit::Z]));
 
-    /// Address 0 – 0 (decimal -3): Config (size + permissions + valid) of selected region.
+    /// Address Z N Z (decimal -3): Config (size + permissions + valid) of selected region.
     pub const MPU_CFG: Self = Self(Tribble::new([Trit::Z, Trit::N, Trit::Z]));
 
-    /// Address 0 – – (decimal -4): Pending-IRQ bitvector.
+    /// Address Z N N (decimal -4): Pending-IRQ bitvector.
     pub const IPENDING: Self = Self(Tribble::new([Trit::N, Trit::N, Trit::Z]));
 
-    /// Address – + + (decimal -5): Per-line IRQ enable mask.
+    /// Address N P P (decimal -5): Per-line IRQ enable mask.
     pub const IENABLE: Self = Self(Tribble::new([Trit::P, Trit::P, Trit::N]));
 
-    /// Address – + 0 (decimal -6): Per-line IRQ priority.
+    /// Address N P Z (decimal -6): Per-line IRQ priority.
     pub const IPRIORITY: Self = Self(Tribble::new([Trit::Z, Trit::P, Trit::N]));
 
     /// Creates a CSR from a tribble address.
-    #[must_use]
-    pub const fn new(address: Tribble) -> Self {
+    ///
+    /// Return `None` unless `address` is in `0..CSR_COUNT`.
+    pub fn new(address: Tribble) -> Self {
+        if address.to_int() < -13 || address.to_int() > 13 {
+            return Self(Tribble::new([Trit::Z, Trit::Z, Trit::Z]));
+        }
         Self(address)
     }
 
