@@ -1,6 +1,7 @@
 //! Arithmetic primitives for balanced ternary words.
 use crate::trit::Trit;
 
+#[inline]
 fn trit_full_add(a: Trit, b: Trit, carry: Trit) -> (Trit, Trit) {
     match a.value() + b.value() + carry.value() {
         -3 => (Trit::Z, Trit::N),

@@ -50,6 +50,7 @@ must_use_candidate = "allow"
 [profile.dev]
 opt-level = 0
 debug = true
+debug-assertions = true
 incremental = true
 
 [profile.release]
@@ -58,8 +59,9 @@ lto = "thin"
 codegen-units = 1
 strip = "symbols"
 
-[profile.test]
-opt-level = 1
-
 [profile.bench]
+opt-level = 3
 debug = true
+lto = "thin"
+codegen-units = 1
+strip = "none"

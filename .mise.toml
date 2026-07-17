@@ -1,3 +1,5 @@
+# Mise is used to manage dependencies and run tasks. See it as an alternative to flake.nix.
+# https://mise.jdx.dev/
 min_version = "2026.7.0"
 
 [env]
@@ -15,6 +17,7 @@ python = "3.13"
 "cargo:git-cliff" = "latest"
 "cargo:mdbook" = "latest"
 "cargo:mdbook-d2" = "latest"
+"cargo:samply" = "latest"
 
 "aqua:terrastruct/d2" = "latest"
 
@@ -31,7 +34,55 @@ description = "Run all tests, including ignored tests"
 run = "cargo nextest run --workspace --run-ignored all --no-fail-fast"
 
 [tasks.bench]
-description = "Run Criterion benchmarks"
+description = "Run Criterion benchmarks (generic crate/bench/filter)"
+usage = '''
+arg "<crate>" help="Workspace crate/package name, e.g. vildrose-core"
+arg "<bench>" help="Bench target name, e.g. benchmarks"
+arg "[filter]" help="Optional Criterion benchmark filter, e.g. 'trit packing/4encode'"
+'''
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+
+crate="{{usage.crate}}"
+bench="{{usage.bench}}"
+filter="{{usage.filter | default(value='')}}"
+
+cmd=(cargo bench -p "$crate" --bench "$bench" --)
+if [ -n "$filter" ]; then
+  cmd+=("$filter")
+fi
+
+echo "[bench] Running: ${cmd[*]}"
+exec "${cmd[@]}"
+'''
+
+[tasks.bench-profile]
+description = "Profile Criterion bench target with Samply (generic)"
+usage = '''
+arg "<crate>" help="Workspace crate/package name, e.g. vildrose-core"
+arg "<bench>" help="Bench target name, e.g. benchmarks"
+arg "[filter]" help="Optional Criterion benchmark filter"
+'''
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+
+crate="{{usage.crate}}"
+bench="{{usage.bench}}"
+filter="{{usage.filter | default(value='')}}"
+
+cmd=(cargo bench -p "$crate" --bench "$bench" --)
+if [ -n "$filter" ]; then
+  cmd+=("$filter")
+fi
+
+echo "[bench-profile] Profiling: ${cmd[*]}"
+exec samply record -- "${cmd[@]}"
+'''
+
+[tasks.bench-all]
+description = "Run all workspace benches"
 run = "cargo bench --workspace"
 
 [tasks.bench-test]
@@ -68,7 +119,10 @@ run = "bacon test"
 
 [tasks.watch-crate]
 description = "Run Bacon for one package"
-run = "bacon -j test -- -p {{arg(name='crate')}}"
+usage = '''
+arg "<crate>" help="Workspace crate/package name"
+'''
+run = "bacon -j test -- -p {{usage.crate}}"
 
 [tasks.ci]
 description = "Run CI-equivalent checks"

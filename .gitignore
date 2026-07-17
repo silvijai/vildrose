@@ -81,3 +81,6 @@ mise.local.toml
 
 # Rust proptest
 .proptest-*
+
+# Samply profile
+*.json.gz
