@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["csr","registers","vector_registers"]};
+window.SIDEBAR_ITEMS = {"mod":["csr","instructions","opcodes","registers","vector_registers"]};

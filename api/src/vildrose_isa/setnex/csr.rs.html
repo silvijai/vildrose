@@ -22,94 +22,98 @@
 <a href=#22 id=22 data-nosnippet>22</a>    <span class="comment">// Positive addresses refer to user code and data.
 <a href=#23 id=23 data-nosnippet>23</a>    // Negative addresses refer to stack and kernel space
 <a href=#24 id=24 data-nosnippet>24</a>    // Using three trits for definition, rather than from_int(), since it's const methods
-<a href=#25 id=25 data-nosnippet>25</a>    </span><span class="doccomment">/// Address 0 0 + (decimal 1): Program counter (T27, word address).
+<a href=#25 id=25 data-nosnippet>25</a>    </span><span class="doccomment">/// Address Z Z P (decimal 1): Program counter (T27, word address).
 <a href=#26 id=26 data-nosnippet>26</a>    </span><span class="kw">pub const </span>PC: <span class="self">Self </span>= <span class="self">Self</span>(Tribble::new([Trit::P, Trit::Z, Trit::Z]));
 <a href=#27 id=27 data-nosnippet>27</a>
-<a href=#28 id=28 data-nosnippet>28</a>    <span class="doccomment">/// Address 0 + – (decimal 2): Logic mode (see §6).
+<a href=#28 id=28 data-nosnippet>28</a>    <span class="doccomment">/// Address N P Z (decimal 2): Logic mode (see §6).
 <a href=#29 id=29 data-nosnippet>29</a>    </span><span class="kw">pub const </span>LMODE: <span class="self">Self </span>= <span class="self">Self</span>(Tribble::new([Trit::N, Trit::P, Trit::Z]));
 <a href=#30 id=30 data-nosnippet>30</a>
-<a href=#31 id=31 data-nosnippet>31</a>    <span class="doccomment">/// Address 0 + 0 (decimal 3): Arithmetic flags (see §5.5).
+<a href=#31 id=31 data-nosnippet>31</a>    <span class="doccomment">/// Address Z P Z (decimal 3): Arithmetic flags (see §5.5).
 <a href=#32 id=32 data-nosnippet>32</a>    </span><span class="kw">pub const </span>FLAGS: <span class="self">Self </span>= <span class="self">Self</span>(Tribble::new([Trit::Z, Trit::P, Trit::Z]));
 <a href=#33 id=33 data-nosnippet>33</a>
-<a href=#34 id=34 data-nosnippet>34</a>    <span class="doccomment">/// Address 0 + + (decimal 4): Exception program counter.
+<a href=#34 id=34 data-nosnippet>34</a>    <span class="doccomment">/// Address Z P P (decimal 4): Exception program counter.
 <a href=#35 id=35 data-nosnippet>35</a>    </span><span class="kw">pub const </span>EPC: <span class="self">Self </span>= <span class="self">Self</span>(Tribble::new([Trit::P, Trit::P, Trit::Z]));
 <a href=#36 id=36 data-nosnippet>36</a>
-<a href=#37 id=37 data-nosnippet>37</a>    <span class="doccomment">/// Address + – – (decimal 5): Exception cause (T27).
+<a href=#37 id=37 data-nosnippet>37</a>    <span class="doccomment">/// Address P N N (decimal 5): Exception cause (T27).
 <a href=#38 id=38 data-nosnippet>38</a>    </span><span class="kw">pub const </span>ECAUSE: <span class="self">Self </span>= <span class="self">Self</span>(Tribble::new([Trit::N, Trit::N, Trit::P]));
 <a href=#39 id=39 data-nosnippet>39</a>
-<a href=#40 id=40 data-nosnippet>40</a>    <span class="doccomment">/// Address + – 0 (decimal 6): Exception vector (handler address).
+<a href=#40 id=40 data-nosnippet>40</a>    <span class="doccomment">/// Address P N Z (decimal 6): Exception vector (handler address).
 <a href=#41 id=41 data-nosnippet>41</a>    </span><span class="kw">pub const </span>EVEC: <span class="self">Self </span>= <span class="self">Self</span>(Tribble::new([Trit::Z, Trit::N, Trit::P]));
 <a href=#42 id=42 data-nosnippet>42</a>
-<a href=#43 id=43 data-nosnippet>43</a>    <span class="doccomment">/// Address + – + (decimal 7): Processor status (see §2.4).
+<a href=#43 id=43 data-nosnippet>43</a>    <span class="doccomment">/// Address P N P (decimal 7): Processor status (see §2.4).
 <a href=#44 id=44 data-nosnippet>44</a>    </span><span class="kw">pub const </span>STATUS: <span class="self">Self </span>= <span class="self">Self</span>(Tribble::new([Trit::P, Trit::N, Trit::P]));
 <a href=#45 id=45 data-nosnippet>45</a>
-<a href=#46 id=46 data-nosnippet>46</a>    <span class="doccomment">/// Address + 0 – (decimal 8): Saved STATUS on exception entry.
+<a href=#46 id=46 data-nosnippet>46</a>    <span class="doccomment">/// Address P Z N (decimal 8): Saved STATUS on exception entry.
 <a href=#47 id=47 data-nosnippet>47</a>    </span><span class="kw">pub const </span>ESAVE: <span class="self">Self </span>= <span class="self">Self</span>(Tribble::new([Trit::N, Trit::Z, Trit::P]));
 <a href=#48 id=48 data-nosnippet>48</a>
-<a href=#49 id=49 data-nosnippet>49</a>    <span class="doccomment">/// Address + 0 0 (decimal 9): Exception trap value (see §8.5).
+<a href=#49 id=49 data-nosnippet>49</a>    <span class="doccomment">/// Address P Z Z (decimal 9): Exception trap value (see §8.5).
 <a href=#50 id=50 data-nosnippet>50</a>    </span><span class="kw">pub const </span>ETVAL: <span class="self">Self </span>= <span class="self">Self</span>(Tribble::new([Trit::Z, Trit::Z, Trit::P]));
 <a href=#51 id=51 data-nosnippet>51</a>
-<a href=#52 id=52 data-nosnippet>52</a>    <span class="doccomment">/// Address + 0 + (decimal 10): Frame-2 exception PC (nested).
+<a href=#52 id=52 data-nosnippet>52</a>    <span class="doccomment">/// Address P Z P (decimal 10): Frame-2 exception PC (nested).
 <a href=#53 id=53 data-nosnippet>53</a>    </span><span class="kw">pub const </span>EPC2: <span class="self">Self </span>= <span class="self">Self</span>(Tribble::new([Trit::P, Trit::Z, Trit::P]));
 <a href=#54 id=54 data-nosnippet>54</a>
-<a href=#55 id=55 data-nosnippet>55</a>    <span class="doccomment">/// Address + + – (decimal 11): Frame-2 exception cause.
+<a href=#55 id=55 data-nosnippet>55</a>    <span class="doccomment">/// Address P P N (decimal 11): Frame-2 exception cause.
 <a href=#56 id=56 data-nosnippet>56</a>    </span><span class="kw">pub const </span>ECAUSE2: <span class="self">Self </span>= <span class="self">Self</span>(Tribble::new([Trit::N, Trit::P, Trit::P]));
 <a href=#57 id=57 data-nosnippet>57</a>
-<a href=#58 id=58 data-nosnippet>58</a>    <span class="doccomment">/// Address + + 0 (decimal 12): Frame-2 saved STATUS.
+<a href=#58 id=58 data-nosnippet>58</a>    <span class="doccomment">/// Address P P Z (decimal 12): Frame-2 saved STATUS.
 <a href=#59 id=59 data-nosnippet>59</a>    </span><span class="kw">pub const </span>ESAVE2: <span class="self">Self </span>= <span class="self">Self</span>(Tribble::new([Trit::Z, Trit::P, Trit::P]));
 <a href=#60 id=60 data-nosnippet>60</a>
-<a href=#61 id=61 data-nosnippet>61</a>    <span class="doccomment">/// Address + + + (decimal 13): Frame-2 exception trap value.
+<a href=#61 id=61 data-nosnippet>61</a>    <span class="doccomment">/// Address P P P (decimal 13): Frame-2 exception trap value.
 <a href=#62 id=62 data-nosnippet>62</a>    </span><span class="kw">pub const </span>ETVAL2: <span class="self">Self </span>= <span class="self">Self</span>(Tribble::new([Trit::P, Trit::P, Trit::P]));
 <a href=#63 id=63 data-nosnippet>63</a>
-<a href=#64 id=64 data-nosnippet>64</a>    <span class="doccomment">/// Address 0 0 – (decimal -1): MPU region index selector.
+<a href=#64 id=64 data-nosnippet>64</a>    <span class="doccomment">/// Address Z Z N (decimal -1): MPU region index selector.
 <a href=#65 id=65 data-nosnippet>65</a>    </span><span class="kw">pub const </span>MPU_SELECT: <span class="self">Self </span>= <span class="self">Self</span>(Tribble::new([Trit::N, Trit::Z, Trit::Z]));
 <a href=#66 id=66 data-nosnippet>66</a>
-<a href=#67 id=67 data-nosnippet>67</a>    <span class="doccomment">/// Address 0 – + (decimal -2): Base address of the selected MPU region.
+<a href=#67 id=67 data-nosnippet>67</a>    <span class="doccomment">/// Address Z N P (decimal -2): Base address of the selected MPU region.
 <a href=#68 id=68 data-nosnippet>68</a>    </span><span class="kw">pub const </span>MPU_BASE: <span class="self">Self </span>= <span class="self">Self</span>(Tribble::new([Trit::P, Trit::N, Trit::Z]));
 <a href=#69 id=69 data-nosnippet>69</a>
-<a href=#70 id=70 data-nosnippet>70</a>    <span class="doccomment">/// Address 0 – 0 (decimal -3): Config (size + permissions + valid) of selected region.
+<a href=#70 id=70 data-nosnippet>70</a>    <span class="doccomment">/// Address Z N Z (decimal -3): Config (size + permissions + valid) of selected region.
 <a href=#71 id=71 data-nosnippet>71</a>    </span><span class="kw">pub const </span>MPU_CFG: <span class="self">Self </span>= <span class="self">Self</span>(Tribble::new([Trit::Z, Trit::N, Trit::Z]));
 <a href=#72 id=72 data-nosnippet>72</a>
-<a href=#73 id=73 data-nosnippet>73</a>    <span class="doccomment">/// Address 0 – – (decimal -4): Pending-IRQ bitvector.
+<a href=#73 id=73 data-nosnippet>73</a>    <span class="doccomment">/// Address Z N N (decimal -4): Pending-IRQ bitvector.
 <a href=#74 id=74 data-nosnippet>74</a>    </span><span class="kw">pub const </span>IPENDING: <span class="self">Self </span>= <span class="self">Self</span>(Tribble::new([Trit::N, Trit::N, Trit::Z]));
 <a href=#75 id=75 data-nosnippet>75</a>
-<a href=#76 id=76 data-nosnippet>76</a>    <span class="doccomment">/// Address – + + (decimal -5): Per-line IRQ enable mask.
+<a href=#76 id=76 data-nosnippet>76</a>    <span class="doccomment">/// Address N P P (decimal -5): Per-line IRQ enable mask.
 <a href=#77 id=77 data-nosnippet>77</a>    </span><span class="kw">pub const </span>IENABLE: <span class="self">Self </span>= <span class="self">Self</span>(Tribble::new([Trit::P, Trit::P, Trit::N]));
 <a href=#78 id=78 data-nosnippet>78</a>
-<a href=#79 id=79 data-nosnippet>79</a>    <span class="doccomment">/// Address – + 0 (decimal -6): Per-line IRQ priority.
+<a href=#79 id=79 data-nosnippet>79</a>    <span class="doccomment">/// Address N P Z (decimal -6): Per-line IRQ priority.
 <a href=#80 id=80 data-nosnippet>80</a>    </span><span class="kw">pub const </span>IPRIORITY: <span class="self">Self </span>= <span class="self">Self</span>(Tribble::new([Trit::Z, Trit::P, Trit::N]));
 <a href=#81 id=81 data-nosnippet>81</a>
 <a href=#82 id=82 data-nosnippet>82</a>    <span class="doccomment">/// Creates a CSR from a tribble address.
-<a href=#83 id=83 data-nosnippet>83</a>    </span><span class="attr">#[must_use]
-<a href=#84 id=84 data-nosnippet>84</a>    </span><span class="kw">pub const fn </span>new(address: Tribble) -&gt; <span class="self">Self </span>{
-<a href=#85 id=85 data-nosnippet>85</a>        <span class="self">Self</span>(address)
-<a href=#86 id=86 data-nosnippet>86</a>    }
-<a href=#87 id=87 data-nosnippet>87</a>
-<a href=#88 id=88 data-nosnippet>88</a>    <span class="doccomment">/// Returns the ternary CSR address.
-<a href=#89 id=89 data-nosnippet>89</a>    </span><span class="attr">#[must_use]
-<a href=#90 id=90 data-nosnippet>90</a>    </span><span class="kw">pub const fn </span>address(<span class="self">self</span>) -&gt; Tribble {
-<a href=#91 id=91 data-nosnippet>91</a>        <span class="self">self</span>.<span class="number">0
-<a href=#92 id=92 data-nosnippet>92</a>    </span>}
-<a href=#93 id=93 data-nosnippet>93</a>
-<a href=#94 id=94 data-nosnippet>94</a>    <span class="doccomment">/// Returns the dense storage index for this CSR, in `0..CSR_COUNT`.
-<a href=#95 id=95 data-nosnippet>95</a>    ///
-<a href=#96 id=96 data-nosnippet>96</a>    /// # Panics
-<a href=#97 id=97 data-nosnippet>97</a>    ///
-<a href=#98 id=98 data-nosnippet>98</a>    /// Panics only if the internal tribble-to-index invariant is violated.
-<a href=#99 id=99 data-nosnippet>99</a>    </span><span class="attr">#[must_use]
-<a href=#100 id=100 data-nosnippet>100</a>    </span><span class="kw">pub fn </span>index(<span class="self">self</span>) -&gt; usize {
-<a href=#101 id=101 data-nosnippet>101</a>        <span class="comment">// map integer address -13..=13 to 0..=26
-<a href=#102 id=102 data-nosnippet>102</a>        </span><span class="kw">let </span>offset = <span class="self">self</span>.<span class="number">0</span>.to_int() + <span class="number">13</span>;
-<a href=#103 id=103 data-nosnippet>103</a>        usize::try_from(offset)
-<a href=#104 id=104 data-nosnippet>104</a>            .ok()
-<a href=#105 id=105 data-nosnippet>105</a>            .filter(|<span class="kw-2">&amp;</span>index| index &lt; CSR_COUNT)
-<a href=#106 id=106 data-nosnippet>106</a>            .expect(<span class="string">"Setnex CSR address always maps to one of 27 slots"</span>)
-<a href=#107 id=107 data-nosnippet>107</a>    }
-<a href=#108 id=108 data-nosnippet>108</a>
-<a href=#109 id=109 data-nosnippet>109</a>    <span class="doccomment">/// Creates a CSR from an integer address in `-13..=13`.
-<a href=#110 id=110 data-nosnippet>110</a>    </span><span class="attr">#[must_use]
-<a href=#111 id=111 data-nosnippet>111</a>    </span><span class="kw">pub fn </span>from_int(value: i8) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
-<a href=#112 id=112 data-nosnippet>112</a>        Tribble::from_int(value).ok().map(<span class="self">Self</span>)
-<a href=#113 id=113 data-nosnippet>113</a>    }
-<a href=#114 id=114 data-nosnippet>114</a>}
+<a href=#83 id=83 data-nosnippet>83</a>    ///
+<a href=#84 id=84 data-nosnippet>84</a>    /// Return `None` unless `address` is in `0..CSR_COUNT`.
+<a href=#85 id=85 data-nosnippet>85</a>    </span><span class="kw">pub fn </span>new(address: Tribble) -&gt; <span class="self">Self </span>{
+<a href=#86 id=86 data-nosnippet>86</a>        <span class="kw">if </span>address.to_int() &lt; -<span class="number">13 </span>|| address.to_int() &gt; <span class="number">13 </span>{
+<a href=#87 id=87 data-nosnippet>87</a>            <span class="kw">return </span><span class="self">Self</span>(Tribble::new([Trit::Z, Trit::Z, Trit::Z]));
+<a href=#88 id=88 data-nosnippet>88</a>        }
+<a href=#89 id=89 data-nosnippet>89</a>        <span class="self">Self</span>(address)
+<a href=#90 id=90 data-nosnippet>90</a>    }
+<a href=#91 id=91 data-nosnippet>91</a>
+<a href=#92 id=92 data-nosnippet>92</a>    <span class="doccomment">/// Returns the ternary CSR address.
+<a href=#93 id=93 data-nosnippet>93</a>    </span><span class="attr">#[must_use]
+<a href=#94 id=94 data-nosnippet>94</a>    </span><span class="kw">pub const fn </span>address(<span class="self">self</span>) -&gt; Tribble {
+<a href=#95 id=95 data-nosnippet>95</a>        <span class="self">self</span>.<span class="number">0
+<a href=#96 id=96 data-nosnippet>96</a>    </span>}
+<a href=#97 id=97 data-nosnippet>97</a>
+<a href=#98 id=98 data-nosnippet>98</a>    <span class="doccomment">/// Returns the dense storage index for this CSR, in `0..CSR_COUNT`.
+<a href=#99 id=99 data-nosnippet>99</a>    ///
+<a href=#100 id=100 data-nosnippet>100</a>    /// # Panics
+<a href=#101 id=101 data-nosnippet>101</a>    ///
+<a href=#102 id=102 data-nosnippet>102</a>    /// Panics only if the internal tribble-to-index invariant is violated.
+<a href=#103 id=103 data-nosnippet>103</a>    </span><span class="attr">#[must_use]
+<a href=#104 id=104 data-nosnippet>104</a>    </span><span class="kw">pub fn </span>index(<span class="self">self</span>) -&gt; usize {
+<a href=#105 id=105 data-nosnippet>105</a>        <span class="comment">// map integer address -13..=13 to 0..=26
+<a href=#106 id=106 data-nosnippet>106</a>        </span><span class="kw">let </span>offset = <span class="self">self</span>.<span class="number">0</span>.to_int() + <span class="number">13</span>;
+<a href=#107 id=107 data-nosnippet>107</a>        usize::try_from(offset)
+<a href=#108 id=108 data-nosnippet>108</a>            .ok()
+<a href=#109 id=109 data-nosnippet>109</a>            .filter(|<span class="kw-2">&amp;</span>index| index &lt; CSR_COUNT)
+<a href=#110 id=110 data-nosnippet>110</a>            .expect(<span class="string">"Setnex CSR address always maps to one of 27 slots"</span>)
+<a href=#111 id=111 data-nosnippet>111</a>    }
+<a href=#112 id=112 data-nosnippet>112</a>
+<a href=#113 id=113 data-nosnippet>113</a>    <span class="doccomment">/// Creates a CSR from an integer address in `-13..=13`.
+<a href=#114 id=114 data-nosnippet>114</a>    </span><span class="attr">#[must_use]
+<a href=#115 id=115 data-nosnippet>115</a>    </span><span class="kw">pub fn </span>from_int(value: i8) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
+<a href=#116 id=116 data-nosnippet>116</a>        Tribble::from_int(value).ok().map(<span class="self">Self</span>)
+<a href=#117 id=117 data-nosnippet>117</a>    }
+<a href=#118 id=118 data-nosnippet>118</a>}
 </code></pre></div></section></main></body></html>
