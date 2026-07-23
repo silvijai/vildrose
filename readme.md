@@ -1,3 +1,7 @@
+## Deprecation Notice
+
+This repo is deprecated, and no longer maintained. Its components have been moved to separate repositories. To find these repositories, please visit the [vildrose organization](https://github.com/vildrose).
+
 # vildrose
 
 An umbrella project referring to a couple main systems:
@@ -44,8 +48,8 @@ There are two implementations of docs, one that is [books](https://silvijai.gith
 ## Roadmap
 
 - [ ] Phase 1: Foundation
-  - [X] Core: arithmetic, type and logic implementation
-  - [X] Core: Test suite
+  - [x] Core: arithmetic, type and logic implementation
+  - [x] Core: Test suite
   - [ ] Core: API and bindings
 
 - [ ] Phase 2a: VM and ISA
@@ -56,6 +60,7 @@ There are two implementations of docs, one that is [books](https://silvijai.gith
   - [ ] Expose connections for anemone
 
 // Still unsure whether vildlang will come now, or I will be using libadalang for a start
+
 - [ ] Phase 2b: Vildlang and Nemunas
   - [ ] Define Vildlang syntax and files
   - [ ] Lexer + Parser
